@@ -218,7 +218,7 @@ object UrlParserNetworkClient {
         }
     }
 
-    suspend inline fun <reified T> makeNetworkRequestStringXXForm(
+    suspend inline fun makeNetworkRequestStringXXForm(
         url: String,
         headers: Map<String, String>? = null,
         formData: Map<String, String>? = null,

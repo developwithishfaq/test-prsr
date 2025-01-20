@@ -18,9 +18,14 @@ class InstagramDirectUrlApiVideoPreview(
 
     override suspend fun scrapeLink(url: String): ParsedVideo? {
         val newUrl = url.purifyInstagramUrl(false)
+
         Log.d(TAG, " insta html scrapeVideos Link: $url\nNew Url = $newUrl")
         val response = UrlParserNetworkClient.makeNetworkRequestString(
-            url = newUrl,
+            url = if (newUrl.contains("reel/")) {
+                newUrl.replace("reel", "reels")
+            } else {
+                newUrl
+            },
             requestType = ParserRequestTypes.Get,
             headers = mapOf(
                 "Sec-Fetch-Mode" to "navigate",
@@ -42,13 +47,11 @@ class InstagramDirectUrlApiVideoPreview(
                 .removeUnnecessarySlashes()
                 .purifyFrom00253D()
             val caption = res.substringAfter("caption\":{\"text\":\"").substringBefore("\",")
-            val videoVersions = res.substringAfterLast("video_versions\":").substringBefore("}],\"")
+            val videoVersions = res.substringAfter("video_versions\":").substringBefore("}],\"")
             val videoUrl = videoVersions.substringAfter("\"url\":\"").substringBefore("\"")
                 .purifyFrom00253D()
                 .removeUnnecessarySlashes()
-                .replace("\\","")
-//                .removeUnnecessarySlashes()
-//                .purifyFrom00253D()
+                .replace("\\", "")
 
             Log.d(TAG, "Is caption:${res.contains("caption")} ")
             Log.d(TAG, "Is Videos:${res.contains("video_versions")} ")
