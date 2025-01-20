@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 //        enableEdgeToEdge()
         setContent {
             var text by remember {
-                mutableStateOf("https://www.instagram.com/p/DE-eTEDyL7T/?igsh=MW1sbWRzOGFmNzM2ZA==")
+                mutableStateOf("https://www.instagram.com/reels/DE4M1Z5N8J8/")
             }
             Column(
                 verticalArrangement = Arrangement.Center,
