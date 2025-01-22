@@ -1,4 +1,4 @@
-package com.adm.url_parser.sdk
+package com.adm.url_parser.sdk.interfaces
 
 import com.adm.url_parser.models.ValidatorResponse
 

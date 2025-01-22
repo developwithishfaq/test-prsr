@@ -2,7 +2,7 @@ package com.adm.url_parser.sdk.usecases
 
 import com.adm.url_parser.interfaces.ApiLinkScrapperMainSdk
 import com.adm.url_parser.models.UrlParserResponse
-import com.adm.url_parser.sdk.UrlParserConfigs
+import com.adm.url_parser.sdk.interfaces.UrlParserConfigs
 import kotlinx.coroutines.delay
 
 class UrlParserDebugUseCase(

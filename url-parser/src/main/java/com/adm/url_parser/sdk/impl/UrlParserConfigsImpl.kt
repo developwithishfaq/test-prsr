@@ -10,7 +10,7 @@ import com.adm.url_parser.impls.not_for_kids.inxx_in.InxxInDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.porn_hub.PornHubDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.xhamster_desi.XHamsterDesiDirectLinkApi
 import com.adm.url_parser.models.ValidatorResponse
-import com.adm.url_parser.sdk.UrlParserConfigs
+import com.adm.url_parser.sdk.interfaces.UrlParserConfigs
 
 fun UrlParserConfigs.isLinkSupported(url: String): Boolean {
     return getParserConfigs(dataMap = mapOf("url" to url)).scrapper != null
