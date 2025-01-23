@@ -42,9 +42,10 @@ class InstagramDirectUrlApi(
                             } else if (newIndex == 1) {
                                 "SD"
                             } else {
-                                "Default"
+                                "HD"
                             },
-                            url = text
+                            url = text,
+                            mediaType = MediaTypeData.Video
                         )
                     )
                     newIndex += 1
@@ -57,7 +58,6 @@ class InstagramDirectUrlApi(
             } else {
                 ParsedVideo(
                     title = "Insta_${System.currentTimeMillis().toString().takeLast(5)}",
-                    mediaType = MediaTypeData.Video,
                     qualities = videos
                 )
             }

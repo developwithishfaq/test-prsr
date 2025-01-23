@@ -29,11 +29,12 @@ class PornHubDirectLinkApi : ApiLinkScrapper {
                     .removeUnnecessarySlashes()
                 val quality =
                     videoLinkAndQuality.substringAfterLast("\"quality\":\"").replace("\"", "")
-                if (quality.startsWith("http").not()){
+                if (quality.startsWith("http").not()) {
                     extractedLinks.add(
                         ParsedQuality(
                             url = videoLink,
-                            name = quality
+                            name = quality,
+                            mediaType = MediaTypeData.Video
                         )
                     )
                 }
@@ -55,8 +56,7 @@ class PornHubDirectLinkApi : ApiLinkScrapper {
             ParsedVideo(
                 title = title,
                 thumbnail = null,
-                qualities = extractedLinks,
-                mediaType = MediaTypeData.Video
+                qualities = extractedLinks
             )
         } else {
             null

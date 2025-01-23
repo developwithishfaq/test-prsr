@@ -32,10 +32,10 @@ class InxxInDirectLinkApi : ApiLinkScrapper {
                 qualities = listOf(
                     ParsedQuality(
                         url = link,
-                        name = quality
+                        name = quality,
+                        mediaType = MediaTypeData.Video
                     )
-                ),
-                mediaType = MediaTypeData.Video
+                )
             )
         } else {
             null

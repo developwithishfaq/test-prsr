@@ -3,6 +3,7 @@ package com.adm.url_parser.sdk.impl
 import com.adm.url_parser.commons.utils.support_checker.UrlParserCheckSupport
 import com.adm.url_parser.impls.main_sites.fb.FbDownloaderMain
 import com.adm.url_parser.impls.main_sites.insta.InstaDownloaderMain
+import com.adm.url_parser.impls.main_sites.insta.impl.graphql.GraphQlConfigs
 import com.adm.url_parser.impls.main_sites.tiktok.TiktokDownloader
 import com.adm.url_parser.impls.main_sites.twitter.TwitterDownloader
 import com.adm.url_parser.impls.not_for_kids.brazzer.impls.BrazzerDirectLinkApi
@@ -17,7 +18,8 @@ fun UrlParserConfigs.isLinkSupported(url: String): Boolean {
 }
 
 class UrlParserConfigsImpl(
-    private val urlParserCheckSupport: UrlParserCheckSupport
+    private val urlParserCheckSupport: UrlParserCheckSupport,
+    private val graphQlConfigs: GraphQlConfigs
 ) : UrlParserConfigs {
     override fun getParserConfigs(dataMap: Map<String, String>): ValidatorResponse {
         val url = dataMap["url"] ?: ""
@@ -28,7 +30,7 @@ class UrlParserConfigsImpl(
             )
         } else if (urlParserCheckSupport.isInstaLink(url)) {
             ValidatorResponse(
-                scrapper = InstaDownloaderMain(), parserName = "Instagram"
+                scrapper = InstaDownloaderMain(graphQlConfigs), parserName = "Instagram"
             )
         } else if (urlParserCheckSupport.isTiktokLink(url)) {
             ValidatorResponse(

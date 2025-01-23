@@ -1,11 +1,11 @@
 package com.adm.url_parser.impls.main_sites.linked_in
 
-import com.adm.url_parser.models.ParsedQuality
-import com.adm.url_parser.models.ParsedVideo
 import com.adm.url_parser.commons.network.ParserRequestTypes
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
 import com.adm.url_parser.interfaces.ApiLinkScrapper
 import com.adm.url_parser.models.MediaTypeData
+import com.adm.url_parser.models.ParsedQuality
+import com.adm.url_parser.models.ParsedVideo
 
 class LinkedInDownloader : ApiLinkScrapper {
     override suspend fun scrapeLink(url: String): ParsedVideo? {
@@ -37,13 +37,18 @@ class LinkedInDownloader : ApiLinkScrapper {
                 thumbnail = it.link ?: ""
             } else if (it.link.isNullOrBlank().not()) {
                 title = it.title.toString()
-                qualities.add(ParsedQuality(it.link ?: "", it.text?.take(10) ?: ""))
+                qualities.add(
+                    ParsedQuality(
+                        url = it.link ?: "",
+                        name = it.text?.take(10) ?: "",
+                        mediaType = MediaTypeData.Video
+                    ),
+                )
             }
         }
         return if (qualities.isNotEmpty()) {
             ParsedVideo(
                 qualities = qualities,
-                mediaType = MediaTypeData.Video,
                 thumbnail = thumbnail,
                 title = title
             )

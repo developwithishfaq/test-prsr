@@ -8,6 +8,7 @@ import com.adm.url_parser.commons.network.UrlParserNetworkClient
 import com.adm.url_parser.impls.main_sites.insta.InstaCommons.getInstagramUrlId
 import com.adm.url_parser.impls.main_sites.insta.InstaCommons.getStringSafe
 import com.adm.url_parser.impls.main_sites.insta.Variables
+import com.adm.url_parser.impls.main_sites.insta.impl.graphql.GraphQlConfigs
 import com.adm.url_parser.interfaces.ApiLinkScrapperForSubImpl
 import com.adm.url_parser.models.MediaTypeData
 import com.adm.url_parser.models.ParsedQuality
@@ -20,6 +21,7 @@ import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 class InstaGraphQlScrapper(
+    private val graphQlConfigs: GraphQlConfigs
 ) : ApiLinkScrapperForSubImpl {
 
     private val TAG = "InstaGraphQlScrapper"
@@ -30,13 +32,12 @@ class InstaGraphQlScrapper(
             val videoId = url.getInstagramUrlId()
             try {
                 val response = UrlParserNetworkClient.makeNetworkRequestStringXXForm(
-                    url = "https://www.instagram.com/graphql/query", headers = mapOf(
-                        HttpHeaders.Cookie to "csrftoken=KfUBze2TeAG0H4FrGFi0B2; csrftoken=DQXjFKuLZhp53agTq3S7hS; ig_did=9B0E8882-43CC-49CF-8596-28E549D03E6E; ig_nrcb=1; mid=Zz2B8AAEAAHWk0oIY1pMO4AGCKvh",
-                        HttpHeaders.ContentType to "application/json",
-                        HttpHeaders.Referrer to "https://www.instagram.com/p/$videoId/",
-                        HttpHeaders.UserAgent to "Mozilla/5.0 (Linux; U; Android 9; en-us; SM-G988N Build/JOP24G) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/86.0.4240.198 Mobile Safari/537.36"
-                    ), formData = mapOf(
-                        "doc_id" to "8845758582119845",
+                    url = "https://www.instagram.com/graphql/query",
+                    headers = graphQlConfigs.getHeaders(url, videoId) + mapOf(
+                        HttpHeaders.Referrer to "https://www.instagram.com/p/$videoId/"
+                    ),
+                    formData = mapOf(
+                        "doc_id" to graphQlConfigs.getDocId(),
                         "variables" to Json.encodeToString(Variables(videoId))
                     )
                 ).data ?: ""
@@ -48,7 +49,6 @@ class InstaGraphQlScrapper(
                 val caption = mediaObject.getCaption()
 
                 var isVideo = false
-
                 val qualities = mutableListOf<ParsedQuality>()
                 val nodes =
                     mediaObject.getJsonObjectSafe("edge_sidecar_to_children")
@@ -58,11 +58,18 @@ class InstaGraphQlScrapper(
                         val node = nodes.getJSONObject(i)
                         val nodeData = node.getJSONObject("node")
                         val itemUrl = nodeData.getString("display_url")
+                        val videoUrl = nodeData.getStringSafe("video_url")
+                        isVideo = nodeData.has("video_url") && videoUrl.isNullOrBlank().not()
                         val name = "Media_${i + 1}"
-                        isVideo = nodeData.getBoolean("is_video")
                         qualities.add(
                             ParsedQuality(
-                                name = name, url = itemUrl
+                                name = name,
+                                url = videoUrl ?: itemUrl,
+                                mediaType = if (isVideo) {
+                                    MediaTypeData.Video
+                                } else {
+                                    MediaTypeData.Image
+                                }
                             )
                         )
                     }
@@ -75,14 +82,18 @@ class InstaGraphQlScrapper(
                         isVideo = true
                         qualities.add(
                             ParsedQuality(
-                                name = name, url = videoUrl
+                                name = name,
+                                url = videoUrl,
+                                mediaType = MediaTypeData.Video
                             )
                         )
                     } else if (displayUrl != null) {
                         isVideo = false
                         qualities.add(
                             ParsedQuality(
-                                name = name, url = displayUrl
+                                name = "Image",
+                                url = displayUrl,
+                                mediaType = MediaTypeData.Video
                             )
                         )
                     }
@@ -91,12 +102,7 @@ class InstaGraphQlScrapper(
                     ParsedVideo(
                         title = caption,
                         thumbnail = thumbnail,
-                        qualities = qualities,
-                        mediaType = if (isVideo) {
-                            MediaTypeData.Video
-                        } else {
-                            MediaTypeData.Image
-                        }
+                        qualities = qualities
                     )
 
                 } else {

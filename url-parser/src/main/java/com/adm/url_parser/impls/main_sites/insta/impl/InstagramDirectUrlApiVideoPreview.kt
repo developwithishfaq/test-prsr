@@ -61,11 +61,11 @@ class InstagramDirectUrlApiVideoPreview(
                 title = caption,
                 thumbnail = thumbnail,
                 duration = "",
-                mediaType = MediaTypeData.Video,
                 qualities = listOf(
                     ParsedQuality(
                         name = "HD",
-                        url = videoUrl
+                        url = videoUrl,
+                        mediaType = MediaTypeData.Video
                     )
                 )
             )

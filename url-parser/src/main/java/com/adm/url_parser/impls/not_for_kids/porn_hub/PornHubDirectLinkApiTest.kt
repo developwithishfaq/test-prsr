@@ -49,14 +49,14 @@ class PornHubDirectLinkApiTest : ApiLinkScrapper {
             ParsedQuality(
                 url = it.videoUrl,
                 name = it.format,
+                mediaType = MediaTypeData.Video
             )
         }
         return if (qualities.isNotEmpty()) {
             ParsedVideo(
                 title = title,
                 thumbnail = null,
-                qualities = qualities,
-                mediaType = MediaTypeData.Video
+                qualities = qualities
             )
         } else {
             null

@@ -27,10 +27,10 @@ class FetchLinksFromPreloadTag : ApiLinkScrapper {
                     qualities = listOf(
                         ParsedQuality(
                             url = m3u8Link,
-                            name = "HD"
+                            name = "HD",
+                            mediaType = MediaTypeData.Video
                         )
-                    ),
-                    mediaType = MediaTypeData.Video
+                    )
                 )
             } else {
                 null

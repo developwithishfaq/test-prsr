@@ -1,11 +1,11 @@
 package com.adm.url_parser.impls.main_sites.tiktok
 
-import com.adm.url_parser.models.ParsedQuality
-import com.adm.url_parser.models.ParsedVideo
 import com.adm.url_parser.commons.network.ParserRequestTypes
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
 import com.adm.url_parser.interfaces.ApiLinkScrapper
 import com.adm.url_parser.models.MediaTypeData
+import com.adm.url_parser.models.ParsedQuality
+import com.adm.url_parser.models.ParsedVideo
 
 class TiktokDownloader : ApiLinkScrapper {
     override suspend fun scrapeLink(url: String): ParsedVideo? {
@@ -20,17 +20,20 @@ class TiktokDownloader : ApiLinkScrapper {
             ParsedQuality(
                 name = "SD",
                 url = data?.play ?: "",
-                size = data?.size?.toLong()
+                size = data?.size?.toLong(),
+                mediaType = MediaTypeData.Video
             ),
             ParsedQuality(
                 name = "Watermark",
                 url = data?.wmplay ?: "",
-                size = data?.wm_size?.toLong()
+                size = data?.wm_size?.toLong(),
+                mediaType = MediaTypeData.Video
             ),
             ParsedQuality(
                 name = "HD",
                 url = data?.hdplay ?: "",
-                size = data?.hd_size?.toLong()
+                size = data?.hd_size?.toLong(),
+                mediaType = MediaTypeData.Video
             ),
         ).filter {
             it.url.isNotBlank()
@@ -41,7 +44,6 @@ class TiktokDownloader : ApiLinkScrapper {
         return if (qualities.isNotEmpty()) {
             ParsedVideo(
                 qualities = qualities,
-                mediaType = MediaTypeData.Video,
                 title = title ?: "",
                 thumbnail = thumbnail1 ?: thumbnail2 ?: "",
                 duration = (duration * 60 * 1000).toString()

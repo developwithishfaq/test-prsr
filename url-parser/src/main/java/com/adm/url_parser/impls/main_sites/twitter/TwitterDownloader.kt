@@ -28,6 +28,7 @@ class TwitterDownloader : ApiLinkScrapper {
                     ParsedQuality(
                         url = model.url,
                         name = model.url.substringAfter("vid/avc1/").substringBefore("x") + "p",
+                        mediaType = MediaTypeData.Video
                     )
                 } else {
                     null
@@ -36,7 +37,6 @@ class TwitterDownloader : ApiLinkScrapper {
         return if (qualities.isNotEmpty()) {
             ParsedVideo(
                 qualities = qualities,
-                mediaType = MediaTypeData.Video,
                 title = response.data?.tweet?.text ?: "",
             )
         } else {

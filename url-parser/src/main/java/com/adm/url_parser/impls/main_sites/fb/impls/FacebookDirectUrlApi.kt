@@ -36,7 +36,8 @@ class FacebookDirectUrlApi(
                 videos.add(
                     ParsedQuality(
                         name = "HD",
-                        url = it
+                        url = it,
+                        mediaType = MediaTypeData.Video
                     )
                 )
             }
@@ -44,7 +45,8 @@ class FacebookDirectUrlApi(
                 videos.add(
                     ParsedQuality(
                         name = "SD",
-                        url = it
+                        url = it,
+                        mediaType = MediaTypeData.Video
                     )
                 )
             }
@@ -55,7 +57,6 @@ class FacebookDirectUrlApi(
             Log.d(TAG, "scrapeVideos fb qualities:${videos} ")
             ParsedVideo(
                 title = res.getTitleFromHtml(),
-                mediaType = MediaTypeData.Video,
                 qualities = videos,
                 thumbnail = thumbnail.removeUnnecessarySlashes()
             )
@@ -64,7 +65,6 @@ class FacebookDirectUrlApi(
             null
         }
     }
-
 
 
     private fun getLinkByTag(html: String, tag: String): String? {

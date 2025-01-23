@@ -56,14 +56,18 @@ class FacebookDirectUrlApiWithUserName(
             if (hdUrl.isNotBlank()) {
                 qualities.add(
                     ParsedQuality(
-                        name = "HD", url = hdUrl
+                        name = "HD",
+                        url = hdUrl,
+                        mediaType = MediaTypeData.Video
                     )
                 )
             }
             if (sdUrl.isNotBlank()) {
                 qualities.add(
                     ParsedQuality(
-                        name = "SD", url = sdUrl
+                        name = "SD",
+                        url = sdUrl,
+                        mediaType = MediaTypeData.Video
                     )
                 )
             }
@@ -71,7 +75,6 @@ class FacebookDirectUrlApiWithUserName(
                 ParsedVideo(
                     title = title,
                     qualities = qualities,
-                    mediaType = MediaTypeData.Video,
                     thumbnail = thumbnail
                 )
             } else {

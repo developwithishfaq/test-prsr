@@ -3,7 +3,6 @@ package com.adm.url_parser.models
 
 data class ParsedVideo(
     val qualities: List<ParsedQuality>,
-    val mediaType: MediaTypeData,
     val title: String? = null,
     val thumbnail: String? = null,
     val duration: String? = null,
@@ -20,5 +19,6 @@ enum class MediaTypeData {
 data class ParsedQuality(
     val url: String,
     val name: String? = null,
-    val size: Long? = null
+    val size: Long? = null,
+    val mediaType: MediaTypeData
 )
