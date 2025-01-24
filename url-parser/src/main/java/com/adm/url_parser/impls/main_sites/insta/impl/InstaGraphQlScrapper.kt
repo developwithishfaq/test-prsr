@@ -49,6 +49,7 @@ class InstaGraphQlScrapper(
                 val caption = mediaObject.getCaption()
 
                 var isVideo = false
+
                 val qualities = mutableListOf<ParsedQuality>()
                 val nodes =
                     mediaObject.getJsonObjectSafe("edge_sidecar_to_children")
@@ -115,9 +116,9 @@ class InstaGraphQlScrapper(
         }
     }
 
-    fun JSONObject.getCaption(): String? {
+    private fun JSONObject.getCaption(): String? {
         val caption = getStringSafe("accessibility_caption")
-        return if (caption == null) {
+        return if (caption == null || caption == "null") {
             val text =
                 getJsonObjectSafe("edge_media_to_caption")?.getJsonArraySafe("edges")?.getAtSafe(0)
                     ?.getJsonObjectSafe("node")?.getStringSafe("text")
