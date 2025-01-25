@@ -48,8 +48,6 @@ class InstaGraphQlScrapper(
                 val thumbnail = mediaObject.getStringSafe("thumbnail_src")
                 val caption = mediaObject.getCaption()
 
-                var isVideo = false
-
                 val qualities = mutableListOf<ParsedQuality>()
                 val nodes =
                     mediaObject.getJsonObjectSafe("edge_sidecar_to_children")
@@ -60,7 +58,7 @@ class InstaGraphQlScrapper(
                         val nodeData = node.getJSONObject("node")
                         val itemUrl = nodeData.getString("display_url")
                         val videoUrl = nodeData.getStringSafe("video_url")
-                        isVideo = nodeData.has("video_url") && videoUrl.isNullOrBlank().not()
+                        val isVideo = nodeData.has("video_url") && videoUrl.isNullOrBlank().not()
                         val name = "Media_${i + 1}"
                         qualities.add(
                             ParsedQuality(
@@ -77,10 +75,11 @@ class InstaGraphQlScrapper(
                 } else {
                     val videoUrl = mediaObject.getStringSafe("video_url")
                     val displayUrl = mediaObject.getStringSafe("display_url")
+                    val displayQualities = mediaObject.getJsonArraySafe("display_resources")
+                    val isQualitiesAvailable = (displayQualities?.length() ?: 0) > 0
 
                     val name = "HD"
                     if (videoUrl != null) {
-                        isVideo = true
                         qualities.add(
                             ParsedQuality(
                                 name = name,
@@ -89,14 +88,31 @@ class InstaGraphQlScrapper(
                             )
                         )
                     } else if (displayUrl != null) {
-                        isVideo = false
-                        qualities.add(
-                            ParsedQuality(
-                                name = "Image",
-                                url = displayUrl,
-                                mediaType = MediaTypeData.Video
+                        if (isQualitiesAvailable) {
+                            repeat(displayQualities?.length() ?: 0) {
+                                val quality = displayQualities?.getJsonObjectSafe(it)
+                                if (quality != null) {
+                                    val link = quality.getStringSafe("src")
+                                    val width = quality.getStringSafe("config_width")
+                                    val height = quality.getStringSafe("config_height")
+                                    qualities.add(
+                                        ParsedQuality(
+                                            url = link ?: "",
+                                            name = width ?: "HD",
+                                            mediaType = MediaTypeData.Image
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            qualities.add(
+                                ParsedQuality(
+                                    name = "Image",
+                                    url = displayUrl,
+                                    mediaType = MediaTypeData.Image
+                                )
                             )
-                        )
+                        }
                     }
                 }
                 if (qualities.isNotEmpty()) {

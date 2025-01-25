@@ -11,6 +11,14 @@ fun JSONObject.getJsonObjectSafe(text: String): JSONObject? {
     }
 }
 
+fun JSONArray.getJsonObjectSafe(index: Int): JSONObject? {
+    return try {
+        getJSONObject(index)
+    } catch (_: Exception) {
+        null
+    }
+}
+
 fun JSONArray.getAtSafe(index: Int): JSONObject? {
     return try {
         this.getJSONObject(index)

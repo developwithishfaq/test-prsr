@@ -114,8 +114,8 @@ class MainActivity : ComponentActivity() {
                     )
                     LazyColumn {
                         items(state?.qualities ?: emptyList()) {
-                            Text(it.mediaType.toString())
-                            Text(it.name ?: "")
+                            Text("Media Type: " + it.mediaType.toString())
+                            Text(("Name " + it.name) ?: "")
                             Text(
                                 it.url ?: "",
                                 fontSize = 8.sp
