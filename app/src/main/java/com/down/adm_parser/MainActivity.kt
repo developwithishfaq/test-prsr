@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adm.url_parser.models.ParsedVideo
 import com.adm.url_parser.sdk.UrlParserSdk
+import com.down.adm_parser.interview.InterviewScreen
 import com.down.adm_parser.ui.theme.AdmparserTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,75 +59,81 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val state by testClass.state.collectAsStateWithLifecycle()
-            val clipboard = LocalClipboardManager.current
-            var text by remember {
-                mutableStateOf("")
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 10.dp, vertical = 30.dp)
-            ) {
+            InterviewScreen()
+//            AdmParserTesting(testClass)
+        }
+    }
+}
 
-                TextField(
-                    value = text,
-                    onValueChange = {
-                        text = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Button(
-                    onClick = {
-                        testClass.parse(text)
-                    }
-                ) {
-                    Text("Parse")
+@Composable
+private fun AdmParserTesting(testClass: TestClass) {
+    val state by testClass.state.collectAsStateWithLifecycle()
+    val clipboard = LocalClipboardManager.current
+    var text by remember {
+        mutableStateOf("")
+    }
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 10.dp, vertical = 30.dp)
+    ) {
+
+        TextField(
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        Button(
+            onClick = {
+                testClass.parse(text)
+            }
+        ) {
+            Text("Parse")
+        }
+        Button(
+            onClick = {
+                clipboard.getText()?.let {
+                    text = it.toString()
                 }
-                Button(
-                    onClick = {
-                        clipboard.getText()?.let {
-                            text = it.toString()
-                        }
-                    }
-                ) {
-                    Text("Paste")
-                }
-                Button(
-                    onClick = {
-                        text = ""
-                    }
-                ) {
-                    Text("Clear")
-                }
-                if (state != null) {
+            }
+        ) {
+            Text("Paste")
+        }
+        Button(
+            onClick = {
+                text = ""
+            }
+        ) {
+            Text("Clear")
+        }
+        if (state != null) {
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+            )
+            Text("Title:${state?.title}")
+            Text("Qualities:${state?.qualities?.size}")
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+            )
+            LazyColumn {
+                items(state?.qualities ?: emptyList()) {
+                    Text("Media Type: " + it.mediaType.toString())
+                    Text(("Name " + it.name) ?: "")
+                    Text(
+                        it.url ?: "",
+                        fontSize = 8.sp
+                    )
                     Spacer(
                         modifier = Modifier
-                            .height(10.dp)
+                            .height(5.dp)
                     )
-                    Text("Title:${state?.title}")
-                    Text("Qualities:${state?.qualities?.size}")
-                    Spacer(
-                        modifier = Modifier
-                            .height(10.dp)
-                    )
-                    LazyColumn {
-                        items(state?.qualities ?: emptyList()) {
-                            Text("Media Type: " + it.mediaType.toString())
-                            Text(("Name " + it.name) ?: "")
-                            Text(
-                                it.url ?: "",
-                                fontSize = 8.sp
-                            )
-                            Spacer(
-                                modifier = Modifier
-                                    .height(5.dp)
-                            )
-                            Text("---------------------------------------")
-                        }
-                    }
+                    Text("---------------------------------------")
                 }
             }
         }
