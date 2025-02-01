@@ -38,10 +38,17 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     override fun isInxxLink(url: String): Boolean {
         return url.contains("inxxx.com/v/")
     }
-//    https://es.pornhub.com/view_video.php?viewkey=6767fac1bf4c8
 
     override fun isPornHubLink(url: String): Boolean {
         return url.contains("pornhub.com/view_video.php?viewkey=")
+    }
+
+    override fun isDailymotionLink(url: String): Boolean {
+        return url.contains("dailymotion.com/video/")
+    }
+
+    override fun isDailymotionMetaDataLink(url: String): Boolean {
+        return url.contains("dailymotion.com/player/metadata/video/")
     }
 
 }

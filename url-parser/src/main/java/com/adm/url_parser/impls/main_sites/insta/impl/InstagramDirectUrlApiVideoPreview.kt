@@ -60,7 +60,6 @@ class InstagramDirectUrlApiVideoPreview(
             ParsedVideo(
                 title = caption,
                 thumbnail = thumbnail,
-                duration = "",
                 qualities = listOf(
                     ParsedQuality(
                         name = "HD",

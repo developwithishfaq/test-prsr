@@ -1,4 +1,4 @@
-package com.adm.url_parser.impls.main_sites.insta.impl
+package com.adm.url_parser.impls.main_sites.insta.impl.graphql
 
 import android.util.Log
 import com.adm.url_parser.commons.getAtSafe
@@ -8,7 +8,6 @@ import com.adm.url_parser.commons.network.UrlParserNetworkClient
 import com.adm.url_parser.impls.main_sites.insta.InstaCommons.getInstagramUrlId
 import com.adm.url_parser.impls.main_sites.insta.InstaCommons.getStringSafe
 import com.adm.url_parser.impls.main_sites.insta.Variables
-import com.adm.url_parser.impls.main_sites.insta.impl.graphql.GraphQlConfigs
 import com.adm.url_parser.interfaces.ApiLinkScrapperForSubImpl
 import com.adm.url_parser.models.MediaTypeData
 import com.adm.url_parser.models.ParsedQuality

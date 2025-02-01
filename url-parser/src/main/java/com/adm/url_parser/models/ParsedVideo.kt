@@ -5,7 +5,7 @@ data class ParsedVideo(
     val qualities: List<ParsedQuality>,
     val title: String? = null,
     val thumbnail: String? = null,
-    val duration: String? = null,
+    val duration: Long? = null,
     val headers: Map<String, String>? = null,
 )
 

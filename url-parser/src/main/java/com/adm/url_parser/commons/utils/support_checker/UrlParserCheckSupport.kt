@@ -10,4 +10,6 @@ interface UrlParserCheckSupport {
     fun isXhamsterDesiLink(url: String): Boolean
     fun isInxxLink(url: String): Boolean
     fun isPornHubLink(url: String): Boolean
+    fun isDailymotionLink(url: String): Boolean
+    fun isDailymotionMetaDataLink(url: String): Boolean
 }

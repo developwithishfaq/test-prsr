@@ -5,7 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Environment
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.IBinder
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,12 +22,177 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.Serializable
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 
 private val TAG = "TestViewModel"
 
 fun main() {
-    mergeTwoSortedList()
+    rvInt()
 }
+
+fun rvInt() {
+    val original = 1012
+    var reversedNumber = 0
+    var temp = original
+    while (temp != 0) {
+        val digit = temp % 10
+        reversedNumber = reversedNumber * 10 + digit
+        temp /= 10
+    }
+    println(reversedNumber)
+}
+
+fun sorttt() {
+    val list = mutableListOf(4, 3, 2, 1)
+    for (i in list.indices) {
+        for (j in 0 until list.size - i - 1) {
+            if (list[j + 1] < list[j]) {
+                val temp = list[j]
+                list[j] = list[j + 1]
+                list[j + 1] = temp
+            }
+        }
+    }
+    println(list)
+}
+
+fun facto(): Int {
+    val number = 3
+    var factorial = 1
+    if (number == 0 || number == 1) {
+        return factorial
+    }
+    for (i in 2..number) {
+        factorial *= i
+    }
+    println(factorial)
+    return factorial
+}
+
+fun revrse() {
+    val text = "Ishfaq"
+    var reversed = ""
+    for (i in text.length - 1 downTo 0) {
+        reversed += text[i]
+    }
+    println(reversed)
+}
+
+
+data class Test(
+    val name: String
+) : Serializable
+
+data class User(val name: String, val age: Int) : Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "", parcel.readInt()
+    )
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeInt(age)
+    }
+
+    override fun describeContents(): Int = 0
+
+    companion object CREATOR : Parcelable.Creator<User> {
+        override fun createFromParcel(parcel: Parcel): User {
+            return User(parcel)
+        }
+
+        override fun newArray(size: Int): Array<User?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
+
+
+fun executors() {
+    val executor = Executors.newFixedThreadPool(1)
+    val taskList = listOf(
+        Callable { "Task 1" },
+        Callable { "Task 2" },
+        Callable { "Task 3" },
+        Callable { "Task 4" },
+        Callable { "Task 5" },
+    )
+    val future = executor.invokeAll(taskList)
+    for (i in future) {
+        println(i.get())
+    }
+    for (i in 0..2) {
+        executor.execute {
+            println("Executing ${i}")
+            Thread.sleep(3000)
+            println("Done ${i}")
+        }
+    }
+    executor.shutdown()
+}
+
+fun handlerThread() {
+    val handlerThread = HandlerThread("Test")
+    handlerThread.start()
+
+    val handler = Handler(handlerThread.looper)
+    handler.post {
+        println("Handler Post")
+    }
+}
+
+fun threadPractice() {
+    val thread = Thread {
+        println("In Thread")
+        Thread.sleep(2000)
+        println("End Thread")
+    }
+    thread.start()
+}
+
+fun sort() {
+    val list1 = mutableListOf(7, 6, 5, 4, 3, 2, 1)
+    for (i in list1.indices) {
+        for (j in 0..<list1.size - i - 1) {
+            if (list1[j] > list1[j + 1]) {
+                val temp = list1[j]
+                list1[j] = list1[j + 1]
+                list1[j + 1] = temp
+            }
+        }
+    }
+    println("List $list1")
+}
+
+fun merger() {
+    val list1 = mutableListOf(2, 3, 4)
+    val list2 = mutableListOf(1, 2, 5)
+    val merged = mutableListOf<Int>()
+
+    var i = 0
+    var j = 0
+    while (i < list1.size && j < list2.size) {
+        if (list1[i] < list2[j]) {
+            merged.add(list1[i])
+            i++
+        } else {
+            merged.add(list2[j])
+            j++
+        }
+    }
+
+    while (i < list1.size) {
+        merged.add(list1[i])
+        i++
+    }
+    while (j < list2.size) {
+        merged.add(list2[j])
+        j++
+    }
+    println(merged)
+}
+
 
 fun mergeTwoSortedList() {
     val list1 = mutableListOf(2, 3, 4)
@@ -116,8 +285,7 @@ fun bubbleSort() {
         }
     }
     println(list)
-}
-/*
+}/*
 fun bubbleSort() {
     val list = mutableListOf(9, 4, 6, 1, 3, 0, 5)
     for (i in list.indices) {
@@ -158,6 +326,24 @@ class InterviewModel(
     private val _students = MutableLiveData<MainData>(MainData())
     val students: LiveData<MainData>
         get() = _students
+
+    fun changeText(text: String) {
+        _state.update {
+            it.copy(
+                text = text
+            )
+        }
+    }
+
+    fun addItem() {
+        val list = _state.value.list.toMutableList()
+        list.add(list.size.toString())
+        _state.update {
+            it.copy(
+                list = list, text = ""
+            )
+        }
+    }
 
     fun btnClicked(context: Context) {
         factorial(25)

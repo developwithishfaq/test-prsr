@@ -46,7 +46,7 @@ class TiktokDownloader : ApiLinkScrapper {
                 qualities = qualities,
                 title = title ?: "",
                 thumbnail = thumbnail1 ?: thumbnail2 ?: "",
-                duration = (duration * 60 * 1000).toString()
+                duration = (duration * 60 * 1000).toLong()
             )
         } else {
             null

@@ -25,7 +25,7 @@ class UrlParserSdk(
     override suspend fun scrapeLink(url: String): UrlParserResponse {
         useCase = UrlParserProductionUseCase(urlParserConfigs)
         val response: UrlParserResponse = useCase.scrapeLink(url)
-        val cleanedResponse = cleaner.getCleanedVideoModel(response)
+        val cleanedResponse: UrlParserResponse = cleaner.getCleanedVideoModel(response)
         Log.d(TAG, "Response(${response.isSupported}):${response.model} ")
         Log.d(TAG, "Response Cleaned(${response.isSupported}):${cleanedResponse} ")
         return cleanedResponse

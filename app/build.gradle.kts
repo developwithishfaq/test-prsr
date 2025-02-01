@@ -26,6 +26,12 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -49,6 +55,10 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
 
     testImplementation("androidx.arch.core:core-testing:2.2.0")
@@ -69,8 +79,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
 
     implementation(libs.bundles.koin)
-
-
+    implementation("androidx.profileinstaller:profileinstaller:1.4.1")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
     implementation(project(":url-parser"))
 
 }

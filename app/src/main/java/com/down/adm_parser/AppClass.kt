@@ -16,6 +16,7 @@ import org.koin.dsl.module
 class AppClass : Application() {
     override fun onCreate() {
         super.onCreate()
+
         startKoin {
             androidContext(applicationContext)
             modules(
