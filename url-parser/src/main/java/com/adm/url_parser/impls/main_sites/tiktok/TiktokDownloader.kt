@@ -2,12 +2,12 @@ package com.adm.url_parser.impls.main_sites.tiktok
 
 import com.adm.url_parser.commons.network.ParserRequestTypes
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
-import com.adm.url_parser.interfaces.ApiLinkScrapper
+import com.adm.url_parser.interfaces.ApiLinkScrapperForSubImpl
 import com.adm.url_parser.models.MediaTypeData
 import com.adm.url_parser.models.ParsedQuality
 import com.adm.url_parser.models.ParsedVideo
 
-class TiktokDownloader : ApiLinkScrapper {
+class TiktokDownloader : ApiLinkScrapperForSubImpl {
     override suspend fun scrapeLink(url: String): ParsedVideo? {
         val videoUrl = "https://www.tikwm.com/api/?url=$url&hd=1"
         val response = UrlParserNetworkClient.makeNetworkRequest<Tiktok>(

@@ -11,12 +11,17 @@ class UrlParserProductionUseCase(
     override suspend fun scrapeLink(url: String): UrlParserResponse {
         var scrapperName = ""
         Log.d("UrlParserSdk", "scrapeLink: $url")
-        val configs = urlParserConfigs.getParserConfigs(mapOf("url" to url))
-        val response = if (configs.scrapper != null) {
+
+        val scrapper: ScrappersUser =
+//            ScrappersSeriesUseCase()
+            ScrapperParallelUseCase()
+
+        val configs = urlParserConfigs.getParserConfigs(dataMap = mapOf("url" to url))
+        val response = if (configs.scrapper.isNotEmpty()) {
             scrapperName = configs.parserName
             UrlParserResponse(
                 isSupported = true,
-                model = configs.scrapper.scrapeLink(url),
+                model = scrapper.invoke(list = configs.scrapper, url = url),
                 parserName = scrapperName,
                 parserClassName = configs.scrapper.javaClass.simpleName,
             )

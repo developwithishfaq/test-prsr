@@ -19,8 +19,10 @@ class FbDownloaderMain(
     override suspend fun scrapeLink(url: String): ParsedVideo? {
         Log.d(TAG, "scrapeLink: $url")
         return withContext(Dispatchers.IO) {
+
             val fbDirectUrlApi = FacebookDirectUrlApi()
             val fbDirectUrlApiWithUserName = FacebookDirectUrlApiWithUserName()
+
             if (url.contains("share")) {
                 val generalInfo = getGeneralInfoOfFbUrl.getGeneralInfo(url)
                 val videoIdAndUserNameModel = async {

@@ -2,10 +2,13 @@ package com.adm.url_parser.commons.utils.support_checker
 
 class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     override fun isFbLink(url: String): Boolean {
-        return (url.contains(".facebook.com/watch/") && url.substringAfterLast("/watch/").length > 2) ||
-                url.contains(".facebook.com/reel/") ||
-                url.contains(".facebook.com/share/v/") ||
-                url.contains(".facebook.com/share/r/")
+        return (
+                url.contains(".facebook.com/watch/") ||
+                        url.contains(".facebook.com/reel/") ||
+                        url.contains(".facebook.com/share/v/") ||
+                        url.contains(".facebook.com/share/r/") ||
+                        (url.contains(".facebook.com") && url.contains("/videos/"))
+                )
     }
 
     override fun isInstaLink(url: String): Boolean {

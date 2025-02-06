@@ -16,14 +16,15 @@ class UrlParserSdk(
     private val cleaner: VideoModelCleaner = VideoModelCleanerImpl(),
     private val graphQlConfigs: GraphQlConfigs = GraphQlConfigsImpl(),
     private val urlParserConfigs: UrlParserConfigs = UrlParserConfigsImpl(
-        urlParserCheckSupport = UrlParserCheckSupportImpl(), graphQlConfigs = graphQlConfigs
+        urlParserCheckSupport = UrlParserCheckSupportImpl(),
+        graphQlConfigs = graphQlConfigs
     ),
 ) : ApiLinkScrapperMainSdk {
     private val TAG = "UrlParserSdk"
     private lateinit var useCase: ApiLinkScrapperMainSdk
 
     override suspend fun scrapeLink(url: String): UrlParserResponse {
-        useCase = UrlParserProductionUseCase(urlParserConfigs)
+        useCase = UrlParserProductionUseCase(urlParserConfigs = urlParserConfigs)
         val response: UrlParserResponse = useCase.scrapeLink(url)
         val cleanedResponse: UrlParserResponse = cleaner.getCleanedVideoModel(response)
         Log.d(TAG, "Response(${response.isSupported}):${response.model} ")
