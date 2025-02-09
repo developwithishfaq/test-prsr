@@ -11,6 +11,7 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
                 )
     }
 
+    //    https://www.instagram.com/reel/DFnYHVwtF2K/?igsh=anFweTB2ODQ1czZ3
     override fun isInstaLink(url: String): Boolean {
         return url.contains(".instagram.com/p/") ||
                 url.contains(".instagram.com/reel/") ||
@@ -43,7 +44,8 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     }
 
     override fun isPornHubLink(url: String): Boolean {
-        return url.contains("pornhub.com/view_video.php?viewkey=")
+        return url.contains("pornhub.com/view_video.php?viewkey=") ||
+                url.contains("pornhub.com/interstitial?viewkey=")
     }
 
     override fun isDailymotionLink(url: String): Boolean {

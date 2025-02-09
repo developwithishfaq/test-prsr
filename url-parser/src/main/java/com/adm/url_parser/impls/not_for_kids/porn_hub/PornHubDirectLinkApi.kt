@@ -13,11 +13,15 @@ import com.adm.url_parser.models.ParsedVideo
 class PornHubDirectLinkApi : ApiLinkScrapper {
     private val TAG = "PornHubDirectLinkApi"
     override suspend fun scrapeLink(url: String): ParsedVideo? {
-        val response =
-            UrlParserNetworkClient.makeNetworkRequestString(
-                url,
-                requestType = ParserRequestTypes.Get
-            ).data ?: ""
+        val newUrl = if (url.contains("interstitial")) {
+            url.replace("interstitial", "view_video.php")
+        } else {
+            url
+        }
+        Log.d(TAG, "scrapeLink: $newUrl")
+        val response = UrlParserNetworkClient.makeNetworkRequestString(
+            url = url, requestType = ParserRequestTypes.Get
+        ).data ?: ""
         val title = response.getTitleFromHtml()
 
         val allVideoLinks = response.split("\"videoUrl\":\"")
@@ -32,9 +36,7 @@ class PornHubDirectLinkApi : ApiLinkScrapper {
                 if (quality.startsWith("http").not()) {
                     extractedLinks.add(
                         ParsedQuality(
-                            url = videoLink,
-                            name = quality,
-                            mediaType = MediaTypeData.Video
+                            url = videoLink, name = quality, mediaType = MediaTypeData.Video
                         )
                     )
                 }
@@ -54,9 +56,7 @@ class PornHubDirectLinkApi : ApiLinkScrapper {
 
         return if (extractedLinks.isNotEmpty()) {
             ParsedVideo(
-                title = title,
-                thumbnail = null,
-                qualities = extractedLinks
+                title = title, thumbnail = null, qualities = extractedLinks
             )
         } else {
             null
