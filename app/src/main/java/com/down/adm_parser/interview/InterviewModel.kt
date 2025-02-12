@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import androidx.annotation.Keep
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -81,10 +82,12 @@ fun revrse() {
 }
 
 
+@Keep
 data class Test(
     val name: String
 ) : Serializable
 
+@Keep
 data class User(val name: String, val age: Int) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "", parcel.readInt()

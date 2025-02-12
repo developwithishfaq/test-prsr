@@ -1,8 +1,10 @@
 package com.adm.url_parser.impls.not_for_kids.porn_hub
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Keep
 data class PornHubApiResponse(
     val defaultQuality: Boolean,
     val format: String,

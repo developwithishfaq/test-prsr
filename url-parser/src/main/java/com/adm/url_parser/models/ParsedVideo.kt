@@ -1,6 +1,9 @@
 package com.adm.url_parser.models
 
+import androidx.annotation.Keep
 
+
+@Keep
 data class ParsedVideo(
     val qualities: List<ParsedQuality>,
     val title: String? = null,
@@ -16,6 +19,7 @@ enum class MediaTypeData {
 
 }
 
+@Keep
 data class ParsedQuality(
     val url: String,
     val name: String? = null,

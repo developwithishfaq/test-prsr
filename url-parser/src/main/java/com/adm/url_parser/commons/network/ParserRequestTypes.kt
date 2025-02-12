@@ -1,6 +1,7 @@
 package com.adm.url_parser.commons.network
 
 import android.util.Log
+import androidx.annotation.Keep
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
@@ -23,6 +24,8 @@ import kotlinx.serialization.json.Json
 
 sealed class ParserRequestTypes {
     data object Get : ParserRequestTypes()
+
+    @Keep
     data class Post(val body: Any?) : ParserRequestTypes()
 }
 

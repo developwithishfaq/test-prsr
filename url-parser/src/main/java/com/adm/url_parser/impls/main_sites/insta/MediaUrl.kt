@@ -1,8 +1,10 @@
 package com.adm.url_parser.impls.main_sites.insta
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Keep
 data class MediaUrl(
     val url: String? = null,
     val urlWrapped: String? = null,
@@ -12,11 +14,13 @@ data class MediaUrl(
 )
 
 @Serializable
+@Keep
 data class Comment(
     val text: String? = null, val username: String? = null
 )
 
 @Serializable
+@Keep
 data class MetaData(
     val title: String? = null,
     val source: String? = null,
@@ -28,6 +32,7 @@ data class MetaData(
 )
 
 @Serializable
+@Keep
 data class InstagramData(
     val url: List<MediaUrl>? = null,
     val meta: MetaData? = null,

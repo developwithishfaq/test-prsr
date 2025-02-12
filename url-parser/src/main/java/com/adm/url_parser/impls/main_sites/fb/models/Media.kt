@@ -1,8 +1,10 @@
 package com.adm.url_parser.impls.main_sites.fb.models
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Keep
 data class Media(
     val audioAvailable: Boolean? = null,
     val cached: Boolean? = null,

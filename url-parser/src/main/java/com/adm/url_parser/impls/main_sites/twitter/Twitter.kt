@@ -1,8 +1,10 @@
 package com.adm.url_parser.impls.main_sites.twitter
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Keep
 data class Twitter(
     val code: Int? = null,
     val message: String? = null,
@@ -10,6 +12,7 @@ data class Twitter(
 )
 
 @Serializable
+@Keep
 data class Tweet(
     val author: Author? = null,
     val created_at: String? = null,
@@ -27,6 +30,7 @@ data class Tweet(
 )
 
 @Serializable
+@Keep
 data class Author(
     val avatar_color: String? = null,
     val avatar_url: String? = null,
@@ -37,11 +41,13 @@ data class Author(
 )
 
 @Serializable
+@Keep
 data class Media(
     val videos: List<Video>
 )
 
 @Serializable
+@Keep
 data class Video(
     val duration: Double? = null,
     val thumbnail_url: String? = null,
@@ -50,6 +56,7 @@ data class Video(
 )
 
 @Serializable
+@Keep
 data class VideoUrl(
     val bitrate: Int? = null,
     val content_type: String? = null,

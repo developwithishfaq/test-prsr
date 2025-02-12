@@ -1,8 +1,10 @@
 package com.adm.url_parser.impls.main_sites.tiktok
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Keep
 data class Data(
     val ai_dynamic_cover: String? = null,
     val anchors: String? = null,
@@ -36,6 +38,7 @@ data class Data(
 )
 
 @Serializable
+@Keep
 data class CommerceInfo(
     val adv_promotable: Boolean? = null,
     val auction_ad_invited: Boolean? = null,
@@ -45,6 +48,7 @@ data class CommerceInfo(
 
 
 @Serializable
+@Keep
 data class MusicInfo(
     val album: String? = null,
     val author: String? = null,
@@ -57,6 +61,7 @@ data class MusicInfo(
 )
 
 @Serializable
+@Keep
 data class Author(
     val avatar: String? = null,
     val id: String? = null,
