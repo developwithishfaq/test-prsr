@@ -36,12 +36,11 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-
     implementation(libs.jsoup)
     //Kotlin ktor
     implementation(libs.bundles.ktor.app)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.library)
+//    implementation(libs.library)
 
 }
 

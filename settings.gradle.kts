@@ -22,4 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "adm-parser"
 include(":app")
 include(":url-parser")
-include(":benchmark")
+//include(":benchmark")
