@@ -36,6 +36,10 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
         return url.contains("xhamster.desi/videos/")
     }
 
+    override fun isXVideosComUrl(url: String): Boolean {
+        return url.contains("xvideos.com/video")
+
+    }
     override fun isXnxUrl(url: String): Boolean {
         return url.contains(".xnxx.com/video-")
     }

@@ -9,17 +9,18 @@ import com.adm.url_parser.models.ParsedQuality
 import com.adm.url_parser.models.ParsedVideo
 
 class BrazzerDirectLinkApi : ApiLinkScrapper {
+    private val TAG = "BrazzerDirectLinkApi"
     override suspend fun scrapeLink(url: String): ParsedVideo? {
-        Log.d("apiImpl", "Brazzer Link:$url ")
+        Log.d(TAG, "Brazzer Link:$url ")
         val response =
             UrlParserNetworkClient.makeNetworkRequestString(url, ParserRequestTypes.Get).data ?: ""
         val title = response.substringAfter("\"name\": \"").substringBefore("\",")
+        Log.d(TAG, "scrapeLink: title=$title")
         val thumbnail =
             response.substringAfter("\"thumbnailUrl\": \"").substringBefore("\",")
         val link = response.substringAfter("\"contentUrl\": \"")
             .substringBefore("\",")
-        Log.d("apiImpl", "scrapeLink 1:$link ")
-        val quality = link.substringBeforeLast(".mp4").substringAfterLast("_")
+        Log.d(TAG, "scrapeLink 1:$link ")
         return if (link.isNotBlank()) {
             ParsedVideo(
                 title = title,
@@ -27,7 +28,7 @@ class BrazzerDirectLinkApi : ApiLinkScrapper {
                 qualities = listOf(
                     ParsedQuality(
                         url = link,
-                        name = quality,
+                        name = "Video",
                         mediaType = MediaTypeData.Video
                     )
                 )

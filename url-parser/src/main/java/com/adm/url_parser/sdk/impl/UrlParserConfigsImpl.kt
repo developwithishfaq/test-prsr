@@ -78,6 +78,11 @@ class UrlParserConfigsImpl(
                 scrapper = listOf(XnxxApiImpl()),
                 parserName = "XnxxApi"
             )
+        } else if (urlParserCheckSupport.isXVideosComUrl(url)) {
+            ValidatorResponse(
+                scrapper = listOf(XnxxApiImpl()),
+                parserName = "XVideos_com"
+            )
         } else if (urlParserCheckSupport.isInxxLink(url)) {
             ValidatorResponse(
                 scrapper = listOf(InxxInDirectLinkApi()),
