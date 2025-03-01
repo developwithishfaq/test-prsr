@@ -12,6 +12,7 @@ object Commons {
     private fun removeUnicodeEscapeSequences(input: String): String {
         val regex = Regex("\\\\u[0-9a-fA-F]{4}")
         return regex.replace(input, "")
+            .replace("\n+".toRegex(), replacement = "\n")
     }
 
     fun String.cleanTitle(): String {

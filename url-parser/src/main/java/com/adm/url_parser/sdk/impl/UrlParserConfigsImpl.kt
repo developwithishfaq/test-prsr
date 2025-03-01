@@ -14,6 +14,8 @@ import com.adm.url_parser.impls.not_for_kids.brazzer.impls.BrazzerDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.inxx_in.InxxInDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.porn_hub.PornHubDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.xhamster_desi.XHamsterDesiDirectLinkApi
+import com.adm.url_parser.impls.not_for_kids.xnxx.XnxxApiImpl
+import com.adm.url_parser.impls.not_for_kids.xnxx_health.XnxxHealthApiImpl
 import com.adm.url_parser.interfaces.ApiLinkScrapper
 import com.adm.url_parser.models.ValidatorResponse
 import com.adm.url_parser.sdk.interfaces.UrlParserConfigs
@@ -65,6 +67,16 @@ class UrlParserConfigsImpl(
             ValidatorResponse(
                 scrapper = listOf(XHamsterDesiDirectLinkApi()),
                 parserName = "XHamsterDesi"
+            )
+        } else if (urlParserCheckSupport.isXnxHealth(url)) {
+            ValidatorResponse(
+                scrapper = listOf(XnxxHealthApiImpl()),
+                parserName = "XnxxHealthApi"
+            )
+        } else if (urlParserCheckSupport.isXnxUrl(url)) {
+            ValidatorResponse(
+                scrapper = listOf(XnxxApiImpl()),
+                parserName = "XnxxApi"
             )
         } else if (urlParserCheckSupport.isInxxLink(url)) {
             ValidatorResponse(
