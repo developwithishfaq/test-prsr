@@ -4,8 +4,8 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     override fun isFbLink(url: String): Boolean {
         return (url == "https://m.facebook.com/watch/").not() && (url.contains(".facebook.com/watch/") || url.contains(
             ".facebook.com/reel/"
-        ) || url.contains(".facebook.com/share/v/") || url.contains(".facebook.com/share/r/") || (url.contains(
-            ".facebook.com"
+        ) || url.contains(".facebook.com/share/v/") || url.contains("facebook.com/share/r/") || (url.contains(
+            "facebook.com"
         ) && url.contains("/videos/")))
     }
 
