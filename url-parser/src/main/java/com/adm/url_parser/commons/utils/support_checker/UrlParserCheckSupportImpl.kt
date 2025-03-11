@@ -11,8 +11,8 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
 
     //    https://www.instagram.com/reel/DFnYHVwtF2K/?igsh=anFweTB2ODQ1czZ3
     override fun isInstaLink(url: String): Boolean {
-        return url.contains(".instagram.com/p/") || url.contains(".instagram.com/reel/") || url.contains(
-            ".instagram.com/reels/"
+        return url.contains("instagram.com/p/") || url.contains("instagram.com/reel/") || url.contains(
+            "instagram.com/reels/"
         )
     }
 
