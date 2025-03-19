@@ -47,7 +47,9 @@ class FacebookDirectUrlApiWithUserName(
 //            val sdUrl = result.substringAfter("browser_native_sd_url\":\"").substringBefore("\",")
 //                .removeUnnecessarySlashes()
 //                .replace("amp;", "")
-
+            if (title.contains("<!DOCTYPE html>")){
+                return@withContext null
+            }
             Log.d(TAG, "scrapeLink: title=$title")
             Log.d(TAG, "scrapeLink: thumbnail=$thumbnail")
             Log.d(TAG, "scrapeLink: hdUrl=$hdUrl")

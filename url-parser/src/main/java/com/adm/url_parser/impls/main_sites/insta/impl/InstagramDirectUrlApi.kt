@@ -15,7 +15,7 @@ class InstagramDirectUrlApi(
 ) : ApiLinkScrapperForSubImpl {
     private val TAG = "InstagramDirectUrlApi"
 
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         val newUrl = url.purifyInstagramUrl()
         Log.d(TAG, " insta html scrapeVideos Link: $url\nNew Url = $newUrl")
         val response = UrlParserNetworkClient.makeNetworkRequestString(
@@ -54,16 +54,18 @@ class InstagramDirectUrlApi(
             Log.d(TAG, "scrapeVideos insta size:${videos.size} ")
             Log.d(TAG, "scrapeVideos insta qualities:${videos} ")
             if (videos.size <= 0) {
-                null
+                Result.failure(Exception("No Qualities Found in InstagramDirectUrlApi"))
             } else {
-                ParsedVideo(
-                    title = "Insta_${System.currentTimeMillis().toString().takeLast(5)}",
-                    qualities = videos
+                Result.success(
+                    ParsedVideo(
+                        title = "Insta_${System.currentTimeMillis().toString().takeLast(5)}",
+                        qualities = videos
+                    )
                 )
             }
         } else {
             Log.d(TAG, "scrapeVideos insta html : $response")
-            null
+            Result.failure(Exception("InstagramDirectUrlApi is not hitting exception is ${response.error}"))
         }
     }
 }

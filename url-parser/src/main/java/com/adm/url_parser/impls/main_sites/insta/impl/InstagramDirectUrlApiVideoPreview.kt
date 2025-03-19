@@ -16,7 +16,7 @@ class InstagramDirectUrlApiVideoPreview(
 ) : ApiLinkScrapperForSubImpl {
     private val TAG = "InstagramDirectUrlApiVideoPreview"
 
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         val newUrl = url.purifyInstagramUrl(false)
 
         Log.d(TAG, " insta html scrapeVideos Link: $url\nNew Url = $newUrl")
@@ -57,20 +57,28 @@ class InstagramDirectUrlApiVideoPreview(
             Log.d(TAG, "Is Videos:${res.contains("video_versions")} ")
             Log.d(TAG, "Is thumbnail:${res.contains("image_versions2")} ")
             Log.d(TAG, "Video Url:${videoUrl}")
-            ParsedVideo(
-                title = caption,
-                thumbnail = thumbnail,
-                qualities = listOf(
-                    ParsedQuality(
-                        name = "HD",
-                        url = videoUrl,
-                        mediaType = MediaTypeData.Video
+            if (videoUrl.isNotBlank() && videoUrl.contains("=").not() && videoUrl.contains(",")
+                    .not()
+            ) {
+                Result.success(
+                    ParsedVideo(
+                        title = caption,
+                        thumbnail = thumbnail,
+                        qualities = listOf(
+                            ParsedQuality(
+                                name = "HD",
+                                url = videoUrl,
+                                mediaType = MediaTypeData.Video
+                            )
+                        )
                     )
                 )
-            )
+            } else {
+                Result.failure(Exception("Video Link found but was invalid ,url=$videoUrl"))
+            }
         } else {
             Log.d(TAG, "scrapeVideos insta html : $response")
-            null
+            Result.failure(Exception("InstagramDirectUrlApiVideoPreview exception while hitting url ${response.error}"))
         }
     }
 }

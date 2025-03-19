@@ -10,18 +10,23 @@ class UrlParserProductionUseCase(
 ) : ApiLinkScrapperMainSdk {
     override suspend fun scrapeLink(url: String): UrlParserResponse {
         var scrapperName = ""
-        Log.d("UrlParserSdk", "scrapeLink: $url")
-
-        val scrapper: ScrappersUser =
-//            ScrappersSeriesUseCase()
-            ScrapperParallelUseCase()
-
+        val scrapper: ScrappersUser = ScrapperParallelUseCase()
         val configs = urlParserConfigs.getParserConfigs(dataMap = mapOf("url" to url))
         val response = if (configs.scrapper.isNotEmpty()) {
             scrapperName = configs.parserName
+            val responseModel = scrapper.invoke(list = configs.scrapper, url = url)
             UrlParserResponse(
                 isSupported = true,
-                model = scrapper.invoke(list = configs.scrapper, url = url),
+                model = if (responseModel.isSuccess) {
+                    responseModel.getOrNull()
+                } else {
+                    null
+                },
+                error = if (responseModel.isFailure) {
+                    responseModel.exceptionOrNull()?.message
+                } else {
+                    null
+                },
                 parserName = scrapperName,
                 parserClassName = configs.scrapper.javaClass.simpleName,
             )

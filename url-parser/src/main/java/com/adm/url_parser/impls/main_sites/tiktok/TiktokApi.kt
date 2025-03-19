@@ -10,7 +10,7 @@ import com.adm.url_parser.models.ParsedVideo
 class TiktokApi : ApiLinkScrapper {
     private val TAG = "TiktokApi"
 
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         val list: List<ApiLinkScrapperForSubImpl> = if (url.contains("/video/")) {
             listOf(
                 DirectUrlTiktokApiImpl(),
@@ -24,11 +24,13 @@ class TiktokApi : ApiLinkScrapper {
         Log.d(TAG, "Tiktok Url =${url}")
         list.forEachIndexed { index, api ->
             val response = api.scrapeLink(url)
-            Log.d(TAG, "Tiktok($index):$response")
-            if (response?.qualities?.isNotEmpty() == true) {
-                return response
+            if (response.isSuccess) {
+                Log.d(TAG, "Tiktok($index):$response")
+                if (response.getOrNull()?.qualities?.isNotEmpty() == true) {
+                    return response
+                }
             }
         }
-        return null
+        return Result.failure(Exception("No response found in TiktokApi"))
     }
 }

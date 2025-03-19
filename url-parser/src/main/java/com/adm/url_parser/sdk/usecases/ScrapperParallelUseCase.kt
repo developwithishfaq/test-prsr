@@ -11,7 +11,7 @@ import kotlin.coroutines.resume
 
 
 class ScrapperParallelUseCase : ScrappersUser {
-    override suspend fun invoke(list: List<ApiLinkScrapper>, url: String): ParsedVideo? {
+    override suspend fun invoke(list: List<ApiLinkScrapper>, url: String): Result<ParsedVideo?> {
         return suspendCancellableCoroutine { cor ->
             val atomicInt = AtomicInteger(0)
             CoroutineScope(Dispatchers.IO).launch {
@@ -19,14 +19,14 @@ class ScrapperParallelUseCase : ScrappersUser {
                     launch {
                         val response = scrapper.scrapeLink(url)
                         val count = atomicInt.incrementAndGet()
-                        if (response != null) {
+                        if (response.isSuccess) {
                             if (cor.isActive) {
                                 cor.resume(response)
                                 cor.cancel()
                             }
                         } else if (count == list.size) {
                             if (cor.isActive) {
-                                cor.resume(null)
+                                cor.resume(Result.failure(Exception("No response found in ScrapperParallelUseCase")))
                                 cor.cancel()
                             }
                         }

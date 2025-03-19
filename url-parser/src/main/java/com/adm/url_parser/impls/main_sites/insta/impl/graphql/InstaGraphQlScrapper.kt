@@ -5,6 +5,7 @@ import com.adm.url_parser.commons.getAtSafe
 import com.adm.url_parser.commons.getJsonArraySafe
 import com.adm.url_parser.commons.getJsonObjectSafe
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
+import com.adm.url_parser.commons.network.UrlParserNetworkResponse
 import com.adm.url_parser.impls.main_sites.insta.InstaCommons.getInstagramUrlId
 import com.adm.url_parser.impls.main_sites.insta.InstaCommons.getStringSafe
 import com.adm.url_parser.impls.main_sites.insta.Variables
@@ -25,12 +26,12 @@ class InstaGraphQlScrapper(
 
     private val TAG = "InstaGraphQlScrapper"
 
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         return withContext(Dispatchers.IO) {
             Log.d(TAG, "scrapeVideos:$url")
             val videoId = url.getInstagramUrlId()
             try {
-                val response = UrlParserNetworkClient.makeNetworkRequestStringXXForm(
+                val responseOfNetwork = UrlParserNetworkClient.makeNetworkRequestStringXXForm(
                     url = "https://www.instagram.com/graphql/query",
                     headers = graphQlConfigs.getHeaders(url, videoId) + mapOf(
                         HttpHeaders.Referrer to "https://www.instagram.com/p/$videoId/"
@@ -39,7 +40,11 @@ class InstaGraphQlScrapper(
                         "doc_id" to graphQlConfigs.getDocId(),
                         "variables" to Json.encodeToString(Variables(videoId))
                     )
-                ).data ?: ""
+                )
+                if (responseOfNetwork is UrlParserNetworkResponse.Failure) {
+                    return@withContext Result.failure(Exception("Graph Api Exception ${responseOfNetwork.error}"))
+                }
+                val response = responseOfNetwork.data ?: ""
                 Log.d(TAG, "scrapeVideos data:$response ")
                 val data = JSONObject(response)
                 val dataObject = data.getJSONObject("data")
@@ -115,18 +120,18 @@ class InstaGraphQlScrapper(
                     }
                 }
                 if (qualities.isNotEmpty()) {
-                    ParsedVideo(
-                        title = caption,
-                        thumbnail = thumbnail,
-                        qualities = qualities
+                    Result.success(
+                        ParsedVideo(
+                            title = caption,
+                            thumbnail = thumbnail,
+                            qualities = qualities
+                        )
                     )
-
                 } else {
-                    null
+                    Result.failure(Exception("No Qualities Found"))
                 }
             } catch (e: Exception) {
-                Log.d(TAG, "scrapeLink: ")
-                null
+                Result.failure(Exception("Exception In InstaGraphQlScrapper error: ${e.message}"))
             }
         }
     }

@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class TiktokApi1Impl : ApiLinkScrapperForSubImpl {
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         return withContext(Dispatchers.IO) {
             val videoUrl = "https://www.tikwm.com/api/?url=$url&hd=1"
             val response = UrlParserNetworkClient.makeNetworkRequest<Tiktok>(
@@ -46,14 +46,16 @@ class TiktokApi1Impl : ApiLinkScrapperForSubImpl {
             val thumbnail2 = response.data?.data?.origin_cover
             val duration = response.data?.data?.duration ?: 0
             if (qualities.isNotEmpty()) {
-                ParsedVideo(
-                    qualities = qualities,
-                    title = title ?: "",
-                    thumbnail = thumbnail1 ?: thumbnail2 ?: "",
-                    duration = (duration * 60 * 1000).toLong()
+                Result.success(
+                    ParsedVideo(
+                        qualities = qualities,
+                        title = title ?: "",
+                        thumbnail = thumbnail1 ?: thumbnail2 ?: "",
+                        duration = (duration * 60 * 1000).toLong()
+                    )
                 )
             } else {
-                null
+                Result.failure(Exception("No qualities found in TiktokApi1Impl"))
             }
         }
     }

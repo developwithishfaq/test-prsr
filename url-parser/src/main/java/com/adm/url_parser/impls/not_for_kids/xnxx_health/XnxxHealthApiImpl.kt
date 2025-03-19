@@ -5,7 +5,7 @@ import com.adm.url_parser.interfaces.ApiLinkScrapper
 import com.adm.url_parser.models.ParsedVideo
 
 class XnxxHealthApiImpl : ApiLinkScrapper {
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         return FetchLinksFromHTML5Player().scrapeLink(url)
     }
 }

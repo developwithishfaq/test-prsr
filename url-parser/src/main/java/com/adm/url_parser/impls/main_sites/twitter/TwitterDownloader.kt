@@ -2,13 +2,14 @@ package com.adm.url_parser.impls.main_sites.twitter
 
 import com.adm.url_parser.commons.network.ParserRequestTypes
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
+import com.adm.url_parser.commons.network.UrlParserNetworkResponse
 import com.adm.url_parser.interfaces.ApiLinkScrapper
 import com.adm.url_parser.models.MediaTypeData
 import com.adm.url_parser.models.ParsedQuality
 import com.adm.url_parser.models.ParsedVideo
 
 class TwitterDownloader : ApiLinkScrapper {
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         val id = (url.substringAfter("status/").substringBefore("/")) ?: ""
 
         val baseUrl = "https://tweeload.aculix.net/status/$id.json"
@@ -21,7 +22,9 @@ class TwitterDownloader : ApiLinkScrapper {
             requestType = ParserRequestTypes.Get,
             headers = headers
         )
-
+        if (response is UrlParserNetworkResponse.Failure) {
+            return Result.failure(Exception("TwitterDownloader is not hitting exception is ${response.error}"))
+        }
         val qualities =
             response.data?.tweet?.media?.videos?.getOrNull(0)?.video_urls?.mapNotNull { model ->
                 if (model.url != null) {
@@ -35,12 +38,14 @@ class TwitterDownloader : ApiLinkScrapper {
                 }
             } ?: emptyList()
         return if (qualities.isNotEmpty()) {
-            ParsedVideo(
-                qualities = qualities,
-                title = response.data?.tweet?.text ?: "",
+            Result.success(
+                ParsedVideo(
+                    qualities = qualities,
+                    title = response.data?.tweet?.text ?: "",
+                )
             )
         } else {
-            null
+            Result.failure(Exception("No qualities found in TwitterDownloader"))
         }
     }
 }

@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 
 class GetInDeviceApiImpl : ApiLinkScrapper {
     private val TAG = "GetInDeviceApiImpl"
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         Log.d(TAG, "scrapeLink: $url")
         return withContext(Dispatchers.IO) {
             val response = UrlParserNetworkClient.makeNetworkRequestXXForm<GetInDeviceResponse>(
@@ -53,14 +53,16 @@ class GetInDeviceApiImpl : ApiLinkScrapper {
             Log.d(TAG, "scrapeLink Qualities Size = ${qualities.size}")
 
             if (qualities.isNotEmpty()) {
-                ParsedVideo(
-                    qualities = qualities,
-                    title = response.data?.title ?: "",
-                    thumbnail = thumbnail,
-                    duration = data?.duration?.toLongOrNull()
+                Result.success(
+                    ParsedVideo(
+                        qualities = qualities,
+                        title = response.data?.title ?: "",
+                        thumbnail = thumbnail,
+                        duration = data?.duration?.toLongOrNull()
+                    )
                 )
             } else {
-                null
+                Result.failure(Exception("No Qualities Found in get in device api"))
             }
         }
     }

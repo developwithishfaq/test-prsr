@@ -32,7 +32,6 @@ class UrlParserConfigsImpl(
     override fun getParserConfigs(dataMap: Map<String, String>): ValidatorResponse {
         val url = dataMap["url"] ?: ""
         val extras = listOf<ApiLinkScrapper>(GetInDeviceApiImpl())
-
         return if (urlParserCheckSupport.isFbLink(url)) {
             Log.d("GetInDeviceApiImpl", "getParserConfigs: fb link $url")
             ValidatorResponse(

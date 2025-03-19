@@ -5,6 +5,7 @@ import com.adm.url_parser.commons.Commons.getTitleFromHtml
 import com.adm.url_parser.commons.Commons.removeUnnecessarySlashes
 import com.adm.url_parser.commons.network.ParserRequestTypes
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
+import com.adm.url_parser.commons.network.UrlParserNetworkResponse
 import com.adm.url_parser.interfaces.ApiLinkScrapper
 import com.adm.url_parser.models.MediaTypeData
 import com.adm.url_parser.models.ParsedQuality
@@ -12,16 +13,20 @@ import com.adm.url_parser.models.ParsedVideo
 
 class PornHubDirectLinkApi : ApiLinkScrapper {
     private val TAG = "PornHubDirectLinkApi"
-    override suspend fun scrapeLink(url: String): ParsedVideo? {
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         val newUrl = if (url.contains("interstitial")) {
             url.replace("interstitial", "view_video.php")
         } else {
             url
         }
         Log.d(TAG, "scrapeLink: $newUrl")
-        val response = UrlParserNetworkClient.makeNetworkRequestString(
+        val responseOfNetwork = UrlParserNetworkClient.makeNetworkRequestString(
             url = url, requestType = ParserRequestTypes.Get
-        ).data ?: ""
+        )
+        if (responseOfNetwork is UrlParserNetworkResponse.Failure) {
+            return Result.failure(Exception("PornHubDirectLinkApi is not hitting exception is ${responseOfNetwork.error}"))
+        }
+        val response = responseOfNetwork.data ?: ""
         val title = response.getTitleFromHtml()
 
         val allVideoLinks = response.split("\"videoUrl\":\"")
@@ -45,7 +50,6 @@ class PornHubDirectLinkApi : ApiLinkScrapper {
         extractedLinks.forEach {
             Log.d(TAG, "Extracted(${it.name}):${it.url}")
         }
-
         val videoUrl = response.substringAfter("\"videoUrl\":\"").substringBefore("\",\"")
             .removeUnnecessarySlashes()
 
@@ -55,11 +59,13 @@ class PornHubDirectLinkApi : ApiLinkScrapper {
         Log.d(TAG, "videoUrl:$videoUrl ")
 
         return if (extractedLinks.isNotEmpty()) {
-            ParsedVideo(
-                title = title, thumbnail = null, qualities = extractedLinks
+            Result.success(
+                ParsedVideo(
+                    title = title, thumbnail = null, qualities = extractedLinks
+                )
             )
         } else {
-            null
+            Result.failure(Exception("Response or Link is blank in PornHubDirectLinkApi"))
         }
     }
 }

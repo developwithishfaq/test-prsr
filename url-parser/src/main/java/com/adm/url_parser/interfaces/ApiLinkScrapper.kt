@@ -4,7 +4,7 @@ import com.adm.url_parser.models.ParsedVideo
 import com.adm.url_parser.models.UrlParserResponse
 
 interface ApiLinkScrapper {
-    suspend fun scrapeLink(url: String): ParsedVideo?
+    suspend fun scrapeLink(url: String): Result<ParsedVideo?>
 }
 
 interface ApiLinkScrapperMainSdk {
@@ -12,6 +12,6 @@ interface ApiLinkScrapperMainSdk {
 }
 
 interface ApiLinkScrapperForSubImpl {
-    suspend fun scrapeLink(url: String): ParsedVideo?
+    suspend fun scrapeLink(url: String): Result<ParsedVideo?>
 }
 
