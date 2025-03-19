@@ -25,7 +25,8 @@ class TwitterDownloader : ApiLinkScrapper {
         if (response is UrlParserNetworkResponse.Failure) {
             return Result.failure(Exception("TwitterDownloader is not hitting exception is ${response.error}"))
         }
-        val qualities =
+
+        val videoQualities =
             response.data?.tweet?.media?.videos?.getOrNull(0)?.video_urls?.mapNotNull { model ->
                 if (model.url != null) {
                     ParsedQuality(
@@ -37,6 +38,17 @@ class TwitterDownloader : ApiLinkScrapper {
                     null
                 }
             } ?: emptyList()
+        val imageQualities = response.data?.tweet?.media?.images?.mapNotNull { model ->
+            if (model.image_url != null) {
+                ParsedQuality(
+                    url = model.image_url,
+                    mediaType = MediaTypeData.Image
+                )
+            } else {
+                null
+            }
+        } ?: emptyList()
+        val qualities = videoQualities.ifEmpty { imageQualities }
         return if (qualities.isNotEmpty()) {
             Result.success(
                 ParsedVideo(

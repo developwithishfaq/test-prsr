@@ -26,7 +26,7 @@ class ScrapperParallelUseCase : ScrappersUser {
                             }
                         } else if (count == list.size) {
                             if (cor.isActive) {
-                                cor.resume(Result.failure(Exception("No response found in ScrapperParallelUseCase")))
+                                cor.resume(Result.failure(response.exceptionOrNull() ?: Exception("No Data Found in ScrapperParallelUseCase")))
                                 cor.cancel()
                             }
                         }

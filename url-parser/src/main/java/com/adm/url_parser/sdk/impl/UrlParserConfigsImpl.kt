@@ -54,7 +54,8 @@ class UrlParserConfigsImpl(
             )
         } else if (urlParserCheckSupport.isTwitterLink(url)) {
             ValidatorResponse(
-                scrapper = listOf(TwitterDownloader()) + extras,
+//                scrapper = listOf(TwitterDownloader()) + extras,
+                scrapper = listOf(TwitterDownloader()) ,
                 parserName = "Twitter"
             )
         } else if (urlParserCheckSupport.isBrazzerLink(url)) {

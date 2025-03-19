@@ -43,7 +43,16 @@ data class Author(
 @Serializable
 @Keep
 data class Media(
-    val videos: List<Video>
+    val videos: List<Video>? = null,
+    val images: List<Image>? = null
+)
+
+
+@Serializable
+@Keep
+data class Image(
+    val type: String? = null,
+    val image_url: String? = null,
 )
 
 @Serializable

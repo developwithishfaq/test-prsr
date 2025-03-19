@@ -1,7 +1,9 @@
 package com.down.adm_parser
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -23,19 +25,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adm.url_parser.models.ParsedVideo
 import com.adm.url_parser.sdk.UrlParserSdk
-import com.down.adm_parser.interview.InterviewScreen
 import com.down.adm_parser.ui.theme.AdmparserTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 private val TAG = "TestClass"
@@ -43,11 +46,17 @@ private val TAG = "TestClass"
 class TestClass() {
     private val urlParser = UrlParserSdk()
     val state = MutableStateFlow<ParsedVideo?>(null)
-    fun parse(text: String = "") {
+    fun parse(text: String = "", context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             state.update { null }
             Log.d(TAG, "parse Started $text")
             val data = urlParser.scrapeLink(text)
+            Log.d(TAG, "parsing error: ${data.error}")
+            if (data.model == null) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Not Found", Toast.LENGTH_SHORT).show()
+                }
+            }
             state.update { data.model }
             Log.d(TAG, "parse Results = $data")
         }
@@ -68,6 +77,7 @@ class MainActivity : ComponentActivity() {
 private fun AdmParserTesting(testClass: TestClass) {
     val state by testClass.state.collectAsStateWithLifecycle()
     val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
     var text by remember {
         mutableStateOf("")
     }
@@ -88,7 +98,7 @@ private fun AdmParserTesting(testClass: TestClass) {
         )
         Button(
             onClick = {
-                testClass.parse(text)
+                testClass.parse(text, context)
             }
         ) {
             Text("Parse")
