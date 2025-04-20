@@ -5,8 +5,10 @@ import com.adm.url_parser.commons.impl.get_in_device_api.GetInDeviceApiImpl
 import com.adm.url_parser.commons.utils.support_checker.UrlParserCheckSupport
 import com.adm.url_parser.impls.main_sites.daily_motion.DailyMotionLinkScrapper
 import com.adm.url_parser.impls.main_sites.fb.FbDownloaderMain
+import com.adm.url_parser.impls.main_sites.fb.impls.insta_redirect_fb.FbSimpleShareLinkScrapper
 import com.adm.url_parser.impls.main_sites.insta.InstaDownloaderMain
 import com.adm.url_parser.impls.main_sites.insta.impl.graphql.GraphQlConfigs
+import com.adm.url_parser.impls.main_sites.linked_in.LinkedInScrapper
 import com.adm.url_parser.impls.main_sites.tiktok.TiktokApi
 import com.adm.url_parser.impls.main_sites.twitter.TwitterDownloader
 import com.adm.url_parser.impls.meta_data_links.dailymotion.DailyMotionMetaDataExtractorImpl
@@ -40,10 +42,23 @@ class UrlParserConfigsImpl(
                 ) + extras,
                 parserName = "Facebook"
             )
+        } else if (urlParserCheckSupport.isFbRedirectInstaLink(url)) {
+            Log.d("GetInDeviceApiImpl", "getParserConfigs: fb link $url")
+            ValidatorResponse(
+                scrapper = listOf(
+                    FbSimpleShareLinkScrapper(InstaDownloaderMain(graphQlConfigs))
+                ) + extras,
+                parserName = "Facebook"
+            )
         } else if (urlParserCheckSupport.isInstaLink(url)) {
             ValidatorResponse(
                 scrapper = listOf(InstaDownloaderMain(graphQlConfigs)),
                 parserName = "Instagram"
+            )
+        } else if (urlParserCheckSupport.isLinkedInLink(url)) {
+            ValidatorResponse(
+                scrapper = listOf(LinkedInScrapper()),
+                parserName = "Tiktok"
             )
         } else if (urlParserCheckSupport.isTiktokLink(url)) {
             ValidatorResponse(
@@ -54,8 +69,7 @@ class UrlParserConfigsImpl(
             )
         } else if (urlParserCheckSupport.isTwitterLink(url)) {
             ValidatorResponse(
-//                scrapper = listOf(TwitterDownloader()) + extras,
-                scrapper = listOf(TwitterDownloader()) ,
+                scrapper = listOf(TwitterDownloader()),
                 parserName = "Twitter"
             )
         } else if (urlParserCheckSupport.isBrazzerLink(url)) {

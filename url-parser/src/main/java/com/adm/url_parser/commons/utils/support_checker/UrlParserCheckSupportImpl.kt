@@ -8,12 +8,15 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
                                 url.contains(".facebook.com/reel/") ||
                                 url.contains(".facebook.com/share/v/") ||
                                 url.contains("facebook.com/share/r/") ||
-                                url.contains("facebook.com/share/") ||
                                 (
                                         url.contains("facebook.com") &&
                                                 url.contains("/videos/")
                                         )
                         )
+    }
+
+    override fun isFbRedirectInstaLink(url: String): Boolean {
+        return url.contains("facebook.com/share/")
     }
 
     override fun isInstaLink(url: String): Boolean {
@@ -22,8 +25,9 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
                 url.contains("instagram.com/reels/")
     }
 
+    //    https://www.linkedin.com/posts/top-edge-technologie_topedgetechnologies-nowhiring-webdeveloper-activity-7318248483960905729-MDQ_?utm_source=social_share_send&utm_medium=android_app&rcm=ACoAACbslWMBNEhIdSLFUGqn_XdEndA-WRbzDq4&utm_campaign=copy_link
     override fun isLinkedInLink(url: String): Boolean {
-        return false
+        return url.contains("linkedin.com/posts/")
     }
 
     override fun isTiktokLink(url: String): Boolean {

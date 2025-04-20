@@ -2,6 +2,7 @@ package com.adm.url_parser.commons.utils.support_checker
 
 interface UrlParserCheckSupport {
     fun isFbLink(url: String): Boolean
+    fun isFbRedirectInstaLink(url: String): Boolean
     fun isInstaLink(url: String): Boolean
     fun isLinkedInLink(url: String): Boolean
     fun isTiktokLink(url: String): Boolean
