@@ -59,6 +59,8 @@ object UrlParserNetworkClient {
         }
     }
 
+    fun getClient() = client
+
     suspend fun ParserRequestTypes.getHttpBuilder(
         url: String, callback: (HttpRequestBuilder) -> Unit
     ): HttpResponse {

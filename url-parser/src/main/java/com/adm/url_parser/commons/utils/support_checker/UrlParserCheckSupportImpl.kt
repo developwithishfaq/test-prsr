@@ -35,6 +35,14 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
                 (url.contains(".tiktok.com/") && url.contains("/video/"))
     }
 
+    override fun isPinterestUrl(url: String): Boolean {
+        return url.contains("https://www.pinterest.com/pin/") || url.contains("https://pin.it/")
+    }
+
+    override fun isTedLink(url: String): Boolean {
+        return url.contains("https://www.ted.com/talks")
+    }
+
     override fun isTwitterLink(url: String): Boolean {
         return url.contains("x.com/") && url.contains("/status/")
     }

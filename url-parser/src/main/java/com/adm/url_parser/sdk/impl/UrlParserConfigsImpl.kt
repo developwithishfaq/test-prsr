@@ -9,6 +9,8 @@ import com.adm.url_parser.impls.main_sites.fb.impls.insta_redirect_fb.FbSimpleSh
 import com.adm.url_parser.impls.main_sites.insta.InstaDownloaderMain
 import com.adm.url_parser.impls.main_sites.insta.impl.graphql.GraphQlConfigs
 import com.adm.url_parser.impls.main_sites.linked_in.LinkedInScrapper
+import com.adm.url_parser.impls.main_sites.pinterest.PinterestSupportApi
+import com.adm.url_parser.impls.main_sites.ted.TedScrapper
 import com.adm.url_parser.impls.main_sites.tiktok.TiktokApi
 import com.adm.url_parser.impls.main_sites.twitter.TwitterDownloader
 import com.adm.url_parser.impls.meta_data_links.dailymotion.DailyMotionMetaDataExtractorImpl
@@ -63,9 +65,23 @@ class UrlParserConfigsImpl(
         } else if (urlParserCheckSupport.isTiktokLink(url)) {
             ValidatorResponse(
                 scrapper =
-                listOf(TiktokApi()) +
-                        extras,
+                    listOf(TiktokApi()) +
+                            extras,
                 parserName = "Tiktok"
+            )
+        } else if (urlParserCheckSupport.isTedLink(url)) {
+            ValidatorResponse(
+                scrapper =
+                    listOf(TedScrapper()) +
+                            extras,
+                parserName = "TedScrapper"
+            )
+        } else if (urlParserCheckSupport.isPinterestUrl(url)) {
+            ValidatorResponse(
+                scrapper =
+                    listOf(PinterestSupportApi()),
+//                    listOf(PinterestSupportApi()) + extras,
+                parserName = "Pinterest"
             )
         } else if (urlParserCheckSupport.isTwitterLink(url)) {
             ValidatorResponse(

@@ -6,6 +6,8 @@ interface UrlParserCheckSupport {
     fun isInstaLink(url: String): Boolean
     fun isLinkedInLink(url: String): Boolean
     fun isTiktokLink(url: String): Boolean
+    fun isTedLink(url: String): Boolean
+    fun isPinterestUrl(url: String): Boolean
     fun isTwitterLink(url: String): Boolean
     fun isBrazzerLink(url: String): Boolean
     fun isXhamsterDesiLink(url: String): Boolean
