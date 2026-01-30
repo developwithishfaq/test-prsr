@@ -30,7 +30,7 @@ class ExpertPhpLinkedinScrapper : ApiLinkScrapperForSubImpl {
         val link = href
             ?.substringBefore("Download images Link")
             ?.substringAfter("<a href=\"")?.substringBefore("\"") ?: ""
-        val model = if (videoLink.isNullOrBlank().not() && videoLink?.startsWith("https") == true) {
+        val model = if (videoLink.isNullOrBlank().not() && videoLink.startsWith("https")) {
             ParsedVideo(
                 thumbnail = if (link.isNotBlank() && link.startsWith("https")) {
                     link

@@ -79,7 +79,11 @@ private fun AdmParserTesting(testClass: TestClass) {
     val clipboard = LocalClipboardManager.current
     val context = LocalContext.current
     var text by remember {
-        mutableStateOf("")
+        //https://www.threads.com/@liverpoolfc/post/DUH_UXmARWz/media
+        //https://www.threads.com/@433/post/DUGiqb9DATW/media
+        //https://www.threads.com/@scarletgray8/post/DUHbNd9Eclb/media
+        //https://www.instagram.com/reel/DRWtD0YDHLf/
+        mutableStateOf("https://www.threads.com/@liverpoolfc/post/DUH_UXmARWz/media")
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -133,9 +137,9 @@ private fun AdmParserTesting(testClass: TestClass) {
             LazyColumn {
                 items(state?.qualities ?: emptyList()) {
                     Text("Media Type: " + it.mediaType.toString())
-                    Text(("Name " + it.name) ?: "")
+                    Text(("Name " + it.name))
                     Text(
-                        it.url ?: "",
+                        it.url,
                         fontSize = 8.sp
                     )
                     Spacer(

@@ -15,6 +15,10 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
                         )
     }
 
+    override fun isThreadsLink(url: String): Boolean {
+        return url.contains("threads.net/") || url.contains("threads.com/")
+    }
+
     override fun isFbRedirectInstaLink(url: String): Boolean {
         return url.contains("facebook.com/share/")
     }
