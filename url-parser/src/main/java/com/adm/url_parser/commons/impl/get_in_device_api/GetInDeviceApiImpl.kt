@@ -1,6 +1,9 @@
 package com.adm.url_parser.commons.impl.get_in_device_api
 
+import android.telecom.VideoProfile.isVideo
 import android.util.Log
+import com.adm.url_parser.commons.Commons.isImageUrl
+import com.adm.url_parser.commons.Commons.isVideoUrl
 import com.adm.url_parser.commons.impl.get_in_device_api.model.GetInDeviceResponse
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
 import com.adm.url_parser.interfaces.ApiLinkScrapper
@@ -28,7 +31,8 @@ class GetInDeviceApiImpl : ApiLinkScrapper {
             val thumbnail = data?.thumbnail
             list.forEach { media ->
                 if (media.quality != "audio") {
-                    val mediaType = if (media.videoAvailable == true) {
+                    val isVideo=media.url?.isVideoUrl()?:false
+                    val mediaType = if (isVideo) {
                         MediaTypeData.Video
                     } else if (media.audioAvailable == true) {
                         MediaTypeData.Audio

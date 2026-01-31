@@ -1,6 +1,8 @@
 package com.adm.url_parser.impls.main_sites.insta.impl
 
 import android.util.Log
+import com.adm.url_parser.commons.Commons.isAUrl
+import com.adm.url_parser.commons.Commons.isImageUrl
 import com.adm.url_parser.commons.Commons.removeUnnecessarySlashes
 import com.adm.url_parser.commons.network.ParserRequestTypes
 import com.adm.url_parser.commons.network.UrlParserNetworkClient
@@ -57,9 +59,10 @@ class InstagramDirectUrlApiVideoPreview(
             Log.d(TAG, "Is Videos:${res.contains("video_versions")} ")
             Log.d(TAG, "Is thumbnail:${res.contains("image_versions2")} ")
             Log.d(TAG, "Video Url:${videoUrl}")
-            if (videoUrl.isNotBlank() && videoUrl.contains("=").not() && videoUrl.contains(",")
-                    .not()
-            ) {
+
+            /** Replaced this videoUrl.contains("=").not() && videoUrl.contains(",").not()
+             * with just videoUrl.isAUrl() */
+            if (videoUrl.isNotBlank() && videoUrl.isAUrl()) {
                 Result.success(
                     ParsedVideo(
                         title = caption,
@@ -68,7 +71,7 @@ class InstagramDirectUrlApiVideoPreview(
                             ParsedQuality(
                                 name = "HD",
                                 url = videoUrl,
-                                mediaType = MediaTypeData.Video
+                                mediaType = if (videoUrl.isImageUrl()) MediaTypeData.Image else MediaTypeData.Video
                             )
                         )
                     )

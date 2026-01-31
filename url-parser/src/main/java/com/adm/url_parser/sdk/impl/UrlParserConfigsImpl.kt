@@ -57,6 +57,11 @@ class UrlParserConfigsImpl(
                 scrapper = listOf(InstaDownloaderMain(graphQlConfigs)),
                 parserName = "Instagram"
             )
+        } else if (urlParserCheckSupport.isThreadsLink(url)) {
+            ValidatorResponse(
+                scrapper = listOf(InstaDownloaderMain(graphQlConfigs)),
+                parserName = "Threads"
+            )
         } else if (urlParserCheckSupport.isLinkedInLink(url)) {
             ValidatorResponse(
                 scrapper = listOf(LinkedInScrapper()),
