@@ -51,7 +51,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.developwithishfaq"
                 artifactId = "test-prj"
-                version = "5.0.1"
+                version = "5.0.2"
             }
         }
     }
