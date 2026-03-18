@@ -43,7 +43,7 @@ import kotlinx.coroutines.withContext
 
 private val TAG = "TestClass"
 
-class TestClass() {
+class TestClass {
     private val urlParser = UrlParserSdk()
     val state = MutableStateFlow<ParsedVideo?>(null)
     fun parse(text: String = "", context: Context) {
@@ -78,12 +78,15 @@ private fun AdmParserTesting(testClass: TestClass) {
     val state by testClass.state.collectAsStateWithLifecycle()
     val clipboard = LocalClipboardManager.current
     val context = LocalContext.current
+    val links=listOf(
+        "https://www.threads.com/@liverpoolfc/post/DUH_UXmARWz/media",
+        "https://www.threads.com/@433/post/DUGiqb9DATW/media",
+        "https://www.threads.com/@scarletgray8/post/DUHbNd9Eclb/media",
+        "https://www.instagram.com/reel/DRWtD0YDHLf/",
+        "https://www.instagram.com/reel/DQN9eI6CF55"
+    )
     var text by remember {
-        //https://www.threads.com/@liverpoolfc/post/DUH_UXmARWz/media
-        //https://www.threads.com/@433/post/DUGiqb9DATW/media
-        //https://www.threads.com/@scarletgray8/post/DUHbNd9Eclb/media
-        //https://www.instagram.com/reel/DRWtD0YDHLf/
-        mutableStateOf("https://www.threads.com/@liverpoolfc/post/DUH_UXmARWz/media")
+        mutableStateOf(links.last())
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
