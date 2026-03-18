@@ -83,9 +83,7 @@ class UrlParserConfigsImpl(
             )
         } else if (urlParserCheckSupport.isPinterestUrl(url)) {
             ValidatorResponse(
-                scrapper =
-                    listOf(PinterestSupportApi()),
-//                    listOf(PinterestSupportApi()) + extras,
+                scrapper = listOf(PinterestSupportApi()),
                 parserName = "Pinterest"
             )
         } else if (urlParserCheckSupport.isTwitterLink(url)) {

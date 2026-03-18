@@ -1,5 +1,7 @@
 package com.adm.url_parser.commons.utils.support_checker
 
+import com.adm.url_parser.commons.Commons.isThreadsDirectMp4Url
+
 class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     override fun isFbLink(url: String): Boolean {
         return (url == "https://m.facebook.com/watch/").not() &&
@@ -15,8 +17,9 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
                         )
     }
 
+
     override fun isThreadsLink(url: String): Boolean {
-        return url.contains("threads.net/") || url.contains("threads.com/")
+        return url.contains("threads.net/") || url.contains("threads.com/") || url.isThreadsDirectMp4Url()
     }
 
     override fun isFbRedirectInstaLink(url: String): Boolean {
@@ -26,7 +29,7 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     override fun isInstaLink(url: String): Boolean {
         return url.contains("instagram.com/p/") ||
                 url.contains("instagram.com/reel/") ||
-                url.contains("instagram.com/reels/")
+                url.contains("instagram.com/reels/") || url.isThreadsDirectMp4Url()
     }
 
     //    https://www.linkedin.com/posts/top-edge-technologie_topedgetechnologies-nowhiring-webdeveloper-activity-7318248483960905729-MDQ_?utm_source=social_share_send&utm_medium=android_app&rcm=ACoAACbslWMBNEhIdSLFUGqn_XdEndA-WRbzDq4&utm_campaign=copy_link

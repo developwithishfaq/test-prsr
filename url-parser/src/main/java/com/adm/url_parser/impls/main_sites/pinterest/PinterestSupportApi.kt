@@ -22,6 +22,10 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonObject
 
 class PinterestSupportApi : ApiLinkScrapper {
+    companion object {
+        private const val TAG = "PinterestSupport"
+    }
+
     override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
         val pinId = if (url.contains("pin.it")) {
             extractPinIdByUrl(extractVideoIdBySharedLink(url) ?: "")
@@ -73,7 +77,7 @@ class PinterestSupportApi : ApiLinkScrapper {
         }
     }
 
-    private val TAG = "PinterestSupport"
+
     private fun extractPinIdByUrl(url: String): String? {
         if (url.contains("--")) {
             return url.substringAfter("--").substringBefore("/")
@@ -157,7 +161,6 @@ class PinterestSupportApi : ApiLinkScrapper {
     }
 }
 
-/*
+/**
 PinterestGraphQlResponse(data=MainDataModel(v3GetPinQuery=V3Query(data=InnerV3Data(videos=null, images=ImageQl(url=https://i.pinimg.com/originals/3b/6b/48/3b6b4860ba83cdd641c6579a7dc4205a.jpg), autoAltText=mother's day gift idea with flowers and butterflies in a glass frame on a table, storyPinData=StoryPinData(pages=[StoryPage(blocks=[StoryBlocksModel(videoDataV2=VideoDataV2(videoListMobile=VideoListMobile(vHLSV3MOBILE=HLSV4(url=https://v1.pinimg.com/videos/iht/hls/2c/c1/e6/2cc1e65b65239e38bbe8d6d38499d0a2.m3u8))))])])))))
-
 */
