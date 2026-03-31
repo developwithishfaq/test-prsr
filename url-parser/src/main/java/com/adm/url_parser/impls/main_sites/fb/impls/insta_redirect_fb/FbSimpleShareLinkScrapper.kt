@@ -6,53 +6,188 @@ import com.adm.url_parser.commons.network.UrlParserNetworkClient
 import com.adm.url_parser.commons.network.UrlParserNetworkResponse
 import com.adm.url_parser.impls.main_sites.insta.InstaDownloaderMain
 import com.adm.url_parser.interfaces.ApiLinkScrapper
+import com.adm.url_parser.models.MediaTypeData
+import com.adm.url_parser.models.ParsedQuality
 import com.adm.url_parser.models.ParsedVideo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.cancellation.CancellationException
 
 class FbSimpleShareLinkScrapper(
-    private val instaDownloaderMain: InstaDownloaderMain
+    private val downloaderMain: InstaDownloaderMain
 ) : ApiLinkScrapper {
-    private val TAG = "FbSimpleShareLinkScrapper"
-    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
-        Log.d(TAG, "FbSimpleShareLinkScrapper:$url")
-        return withContext(Dispatchers.IO) {
-            val firstUrlResponse = UrlParserNetworkClient.makeNetworkRequestString(
-                url = url,
-                requestType = ParserRequestTypes.Get
-            )
-            if (firstUrlResponse is UrlParserNetworkResponse.Failure) {
-                return@withContext Result.failure(Exception("Failed to hit url=${url}, exception ${firstUrlResponse.error}"))
-            }
-            val responseHtml = firstUrlResponse.data ?: ""
-            val actorId =
-                responseHtml.substringAfter("\"props\":{\"actorID\":").substringBefore(",")
-                    .toLongOrNull()
-            val storyToken =
-                responseHtml.substringAfter("\"story_token\":\"").substringBefore("\",")
-                    .toLongOrNull()
-            if (actorId == null || storyToken == null) {
-                return@withContext Result.failure(Exception("FbSimpleShareLinkScrapper actorId=$actorId storyToken=$storyToken ,one is null for url =$url"))
-            }
-            val secondUrl = "https://www.facebook.com/$actorId/posts/$storyToken"
-            Log.d(TAG, "FbSimpleShareLinkScrapper:secondUrl=$secondUrl")
-            val secondUrlResponse = UrlParserNetworkClient.makeNetworkRequestString(
-                url = secondUrl,
-                requestType = ParserRequestTypes.Get,
-                headers = mapOf(
-                    "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"
-                )
-            )
-            val secondResponseHtml = secondUrlResponse.data ?: ""
-            val instaReelId =
-                secondResponseHtml.substringAfter("https:\\/\\/www.instagram.com\\/reel\\/")
-                    .substringBefore("\\/\"")
-            val thirdUrl = "https://www.instagram.com/reel/$instaReelId/"
-            Log.d(TAG, "FbSimpleShareLinkScrapper thirdUrl=$thirdUrl")
-            val finalModel = instaDownloaderMain.scrapeLink(thirdUrl)
-            Log.d(TAG, "FbSimpleShareLinkScrapper response=$finalModel")
-            finalModel
-        }
 
+    companion object {
+        private const val TAG = "FbRedirectedShareLinkScrapper"
+    }
+
+    override suspend fun scrapeLink(url: String): Result<ParsedVideo?> {
+        Log.d(TAG, "scrapeLink: url=$url")
+        return withContext(Dispatchers.IO) {
+            try {
+
+                // ── Step 1: Hit the original redirected share URL ─────────────
+                val firstHtml = fetchHtml(url)
+                    ?: return@withContext Result.failure(
+                        Exception("Empty response for url=$url")
+                    )
+
+                // ── Step 2: Extract actorId + storyFBID ──────────────────────
+                val storyFBID = firstHtml
+                    .substringAfter("\"storyFBID\":\"", missingDelimiterValue = "")
+                    .substringBefore("\"")
+                    .toLongOrNull()
+
+                val actorId = firstHtml
+                    .substringAfter("\"storyID\":\"", missingDelimiterValue = "")
+                    .substringBefore("\"")
+                    .decodeBase64ActorId()
+
+                Log.d(TAG, "actorId=$actorId storyFBID=$storyFBID")
+
+                if (actorId == null || storyFBID == null) {
+                    return@withContext Result.failure(
+                        Exception("Parsing failed: actorId=$actorId storyFBID=$storyFBID for url=$url")
+                    )
+                }
+
+                // ── Step 3: Hit the resolved FB post URL ─────────────────────
+                val secondUrl = "https://www.facebook.com/$actorId/posts/$storyFBID"
+                Log.d(TAG, "secondUrl=$secondUrl")
+
+                val secondHtml = fetchHtml(
+                    url = secondUrl,
+                    headers = mapOf(
+                        "Accept" to "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8"
+                    )
+                ) ?: return@withContext Result.failure(
+                    Exception("Empty response for secondUrl=$secondUrl")
+                )
+
+                // ── Step 4: Case A — Cross-posted Instagram Reel ─────────────
+                val instagramReelId = secondHtml
+                    .substringAfter(
+                        "https:\\/\\/www.instagram.com\\/reel\\/",
+                        missingDelimiterValue = ""
+                    )
+                    .substringBefore("\\/\"")
+                    .takeIf { it.isNotBlank() && it.length <= 20 && it.none { c -> c.isWhitespace() } }
+
+                if (!instagramReelId.isNullOrBlank()) {
+                    val reelUrl = "https://www.instagram.com/reel/$instagramReelId/"
+                    Log.d(TAG, "Case A — Instagram reel: reelUrl=$reelUrl")
+                    val model = downloaderMain.scrapeLink(reelUrl)
+                    Log.d(TAG, "Case A — Instagram reel: Model=$model")
+                    return@withContext model
+                }
+
+                // ── Step 5: Case B — Native Facebook Photo / Video post ───────
+                val ogImageUrl = secondHtml
+                    .substringAfter("og:image\" content=\"", missingDelimiterValue = "")
+                    .substringBefore("\"")
+                    .replace("&amp;", "&")
+                    .takeIf { it.startsWith("http") }
+
+                if (!ogImageUrl.isNullOrBlank()) {
+                    val mediaType = secondHtml.detectFbMediaType()
+                    val title = secondHtml.extractFbTitle()
+                    val model = ParsedVideo(
+                        qualities = listOf(
+                            ParsedQuality(
+                                url = ogImageUrl,
+                                name = "HD",
+                                mediaType = mediaType
+                            )
+                        ),
+                        title = title,
+                        thumbnail = ogImageUrl
+                    )
+                    Log.d(TAG, "Case B — Native FB post: Model=$model")
+                    return@withContext Result.success(model)
+                }
+
+                // ── Step 6: Nothing extracted ─────────────────────────────────
+                Log.w(TAG, "No content extracted from secondUrl=$secondUrl")
+                Result.failure(Exception("Could not extract any media from url=$url"))
+
+            } catch (e: CancellationException) {
+                // Always re-throw CancellationException so coroutines cancel cleanly
+                throw e
+            } catch (e: Exception) {
+                Log.e(TAG, "Unexpected error for url=$url", e)
+                Result.failure(e)
+            }
+        }
+    }
+
+    // ── Private helpers ───────────────────────────────────────────────────────
+
+    private suspend fun fetchHtml(
+        url: String,
+        headers: Map<String, String> = emptyMap()
+    ): String? {
+        val response = UrlParserNetworkClient.makeNetworkRequestString(
+            url = url,
+            requestType = ParserRequestTypes.Get,
+            headers = headers
+        )
+        return when (response) {
+            is UrlParserNetworkResponse.Failure -> {
+                Log.e(TAG, "Network failure for url=$url error=${response.error}")
+                null
+            }
+
+            else -> response.data?.takeIf { it.isNotBlank() }
+        }
+    }
+
+    /**
+     * FB storyID is base64-encoded in format: "S:_I<actorId>:VK:<postId>"
+     * e.g. decodes to "S:_I100007023257832:VK:4316473115347483"
+     */
+    private fun String.decodeBase64ActorId(): Long? {
+        if (isBlank()) return null
+        return try {
+            val decoded = String(
+                android.util.Base64.decode(this, android.util.Base64.DEFAULT)
+            )
+            decoded
+                .substringAfter("_I", missingDelimiterValue = "")
+                .substringBefore(":")
+                .toLongOrNull()
+        } catch (_: IllegalArgumentException) {
+            Log.e(TAG, "Base64 decode failed for storyID=$this")
+            null
+        }
+    }
+
+    /**
+     * Determines media type from FB HTML __typename field.
+     * "Photo" → Image  |  "Video" → Video  |  fallback → Image
+     */
+    private fun String.detectFbMediaType(): MediaTypeData {
+        val typename = substringAfter(
+            "\"__typename\":\"",
+            missingDelimiterValue = ""
+        ).substringBefore("\"")
+
+        return when {
+            typename.contains("Video", ignoreCase = true) -> MediaTypeData.Video
+            typename.contains("Audio", ignoreCase = true) -> MediaTypeData.Audio
+            else -> MediaTypeData.Image
+        }
+    }
+
+    /**
+     * Extracts post title from og:title, falling back to og:image:alt.
+     */
+    private fun String.extractFbTitle(): String? {
+        return substringAfter("og:title\" content=\"", missingDelimiterValue = "")
+            .substringBefore("\"")
+            .replace("&amp;", "&")
+            .takeIf { it.isNotBlank() }
+            ?: substringAfter("og:image:alt\" content=\"", missingDelimiterValue = "")
+                .substringBefore("\"")
+                .takeIf { it.isNotBlank() }
     }
 }
