@@ -33,15 +33,29 @@ class FbSimpleShareLinkScrapper(
                     )
 
                 // ── Step 2: Extract actorId + storyFBID ──────────────────────
+                // FB uses "storyFBID" on some posts and "story_fbid" on others
                 val storyFBID = firstHtml
                     .substringAfter("\"storyFBID\":\"", missingDelimiterValue = "")
                     .substringBefore("\"")
                     .toLongOrNull()
+                    ?: firstHtml
+                        .substringAfter("\"story_fbid\":\"", missingDelimiterValue = "")
+                        .substringBefore("\"")
+                        .toLongOrNull()
 
+
+                // ActorId: try base64 storyID first, fall back to "id" field adjacent to "story_fbid"
+                // Format 1 (base64): "S:_I100007023257832:VK:4316473115347483"
+                // Format 2 (direct): "story_fbid":"1831925424170660","id":"100020596597523"
                 val actorId = firstHtml
                     .substringAfter("\"storyID\":\"", missingDelimiterValue = "")
                     .substringBefore("\"")
                     .decodeBase64ActorId()
+                    ?: firstHtml
+                        .substringAfter("\"story_fbid\":\"", missingDelimiterValue = "")
+                        .substringAfter("\"id\":\"", missingDelimiterValue = "")
+                        .substringBefore("\"")
+                        .toLongOrNull()
 
                 Log.d(TAG, "actorId=$actorId storyFBID=$storyFBID")
 
@@ -142,8 +156,14 @@ class FbSimpleShareLinkScrapper(
     }
 
     /**
-     * FB storyID is base64-encoded in format: "S:_I<actorId>:VK:<postId>"
-     * e.g. decodes to "S:_I100007023257832:VK:4316473115347483"
+     * FB storyID is base64-encoded.
+     * Decodes to formats like:
+     *   "S:_I100007023257832:VK:4316473115347483"  (groups/pages)
+     *   "S:_I100020596597523:1831925424170660"      (personal profiles)
+     * Actor ID always follows "_I" up to the next ":"
+     *
+     * If base64 decode fails or "_I" is missing, caller falls back to
+     * extracting the "id" field adjacent to "story_fbid" in the HTML.
      */
     private fun String.decodeBase64ActorId(): Long? {
         if (isBlank()) return null
