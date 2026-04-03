@@ -83,7 +83,8 @@ private fun AdmParserTesting(testClass: TestClass) {
         "https://www.threads.com/@433/post/DUGiqb9DATW/media",
         "https://www.threads.com/@scarletgray8/post/DUHbNd9Eclb/media",
         "https://www.instagram.com/reel/DRWtD0YDHLf/",
-        "https://www.instagram.com/reel/DQN9eI6CF55"
+        "https://www.instagram.com/reel/DQN9eI6CF55",
+        "https://www.facebook.com/share/p/1aQRYjoCtx/"
     )
     var text by remember {
         mutableStateOf(links.last())
