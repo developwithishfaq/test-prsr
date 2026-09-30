@@ -41,6 +41,8 @@ dependencies {
     implementation(libs.bundles.ktor.app)
     implementation(libs.kotlinx.serialization.json)
 
+    testImplementation("junit:junit:4.13.2")
+
 }
 
 afterEvaluate {

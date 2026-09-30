@@ -51,7 +51,7 @@ class UrlParserCheckSupportImpl : UrlParserCheckSupport {
     }
 
     override fun isTwitterLink(url: String): Boolean {
-        return url.contains("x.com/") && url.contains("/status/")
+        return (url.contains("x.com/") || url.contains("twitter.com/")) && url.contains("/status/")
     }
 
     override fun isBrazzerLink(url: String): Boolean {

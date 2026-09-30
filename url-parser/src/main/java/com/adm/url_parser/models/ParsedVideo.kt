@@ -24,5 +24,7 @@ data class ParsedQuality(
     val url: String,
     val name: String? = null,
     val size: Long? = null,
-    val mediaType: MediaTypeData
+    val mediaType: MediaTypeData,
+    /** Separate audio track to mux into this video after download (Reddit, bilibili.tv). */
+    val audioUrl: String? = null,
 )

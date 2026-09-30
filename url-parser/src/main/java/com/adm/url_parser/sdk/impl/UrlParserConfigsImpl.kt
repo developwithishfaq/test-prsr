@@ -20,7 +20,21 @@ import com.adm.url_parser.impls.not_for_kids.porn_hub.PornHubDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.xhamster_desi.XHamsterDesiDirectLinkApi
 import com.adm.url_parser.impls.not_for_kids.xnxx.XnxxApiImpl
 import com.adm.url_parser.impls.not_for_kids.xnxx_health.XnxxHealthApiImpl
+import com.adm.url_parser.impls.main_sites.bilibili.BilibiliScrapper
+import com.adm.url_parser.impls.main_sites.capcut.CapCutScrapper
+import com.adm.url_parser.impls.main_sites.douyin.DouyinScrapper
+import com.adm.url_parser.impls.main_sites.kwai.KwaiScrapper
+import com.adm.url_parser.impls.main_sites.likee.LikeeScrapper
+import com.adm.url_parser.impls.main_sites.ok.OkRuScrapper
+import com.adm.url_parser.impls.main_sites.reddit.RedditScrapper
+import com.adm.url_parser.impls.main_sites.rednote.RedNoteScrapper
+import com.adm.url_parser.impls.main_sites.rumble.RumbleScrapper
+import com.adm.url_parser.impls.main_sites.snapchat.SnapchatScrapper
+import com.adm.url_parser.impls.main_sites.telegram.TelegramScrapper
+import com.adm.url_parser.impls.main_sites.vimeo.VimeoScrapper
+import com.adm.url_parser.impls.main_sites.vk.VkScrapper
 import com.adm.url_parser.interfaces.ApiLinkScrapper
+import com.adm.url_parser.interfaces.SiteScrapper
 import com.adm.url_parser.models.ValidatorResponse
 import com.adm.url_parser.sdk.interfaces.UrlParserConfigs
 
@@ -137,7 +151,14 @@ class UrlParserConfigsImpl(
                 parserName = "DailymotionMetaData"
             )
         } else {
-            ValidatorResponse(emptyList())
+            siteScrappers.firstOrNull { it.matches(url) }
+                ?.let { ValidatorResponse(scrapper = listOf(it), parserName = it.name) }
+                ?: ValidatorResponse(emptyList())
         }
     }
+
+    private val siteScrappers = listOf<SiteScrapper>(
+        RedditScrapper, TelegramScrapper, VimeoScrapper, VkScrapper, OkRuScrapper, RumbleScrapper,
+        BilibiliScrapper, DouyinScrapper, SnapchatScrapper, RedNoteScrapper, LikeeScrapper, CapCutScrapper, KwaiScrapper,
+    )
 }

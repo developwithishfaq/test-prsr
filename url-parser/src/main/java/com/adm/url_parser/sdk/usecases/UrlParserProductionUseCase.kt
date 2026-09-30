@@ -1,6 +1,7 @@
 package com.adm.url_parser.sdk.usecases
 
 import android.util.Log
+import com.adm.url_parser.commons.ShortLinkResolver
 import com.adm.url_parser.interfaces.ApiLinkScrapperMainSdk
 import com.adm.url_parser.models.UrlParserResponse
 import com.adm.url_parser.sdk.interfaces.UrlParserConfigs
@@ -11,10 +12,11 @@ class UrlParserProductionUseCase(
     override suspend fun scrapeLink(url: String): UrlParserResponse {
         var scrapperName = ""
         val scrapper: ScrappersUser = ScrapperParallelUseCase()
-        val configs = urlParserConfigs.getParserConfigs(dataMap = mapOf("url" to url))
+        val link = ShortLinkResolver.resolve(url) ?: url
+        val configs = urlParserConfigs.getParserConfigs(dataMap = mapOf("url" to link))
         val response = if (configs.scrapper.isNotEmpty()) {
             scrapperName = configs.parserName
-            val responseModel = scrapper.invoke(list = configs.scrapper, url = url)
+            val responseModel = scrapper.invoke(list = configs.scrapper, url = link)
             UrlParserResponse(
                 isSupported = true,
                 model = if (responseModel.isSuccess) {
